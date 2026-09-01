@@ -39,7 +39,8 @@ if "b_calc_done" not in st.session_state:
 st.title("📈 Shopify Revenue & Recovery Calculator")
 st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
 
-nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Legal & Privacy"])
+# Navigation Tabs including the new SEO Guides section
+nav_tab1, nav_tab2, nav_tab3, nav_tab4 = st.tabs(["Calculator", "Tool Finder", "Guides & Articles", "Legal & Privacy"])
 
 with nav_tab1:
     st.header("Revenue & Recovery Calculator")
@@ -76,7 +77,6 @@ with nav_tab1:
         res_col2.metric("Monthly Recoverable", f"${st.session_state['b_pot_mon']:,.2f}", delta=f"+{(st.session_state['b_pot_mon']/max(st.session_state['b_curr_rev'], 1))*100:.1f}%")
         res_col3.metric("Annual Recoverable", f"${st.session_state['b_annual']:,.2f}")
 
-        # Интегрированный блок подбора софта сразу под цифрами
         st.divider()
         st.subheader("🛠️ Find Your Recovery Tool Stack")
         st.write("Find your ideal software stack based on your store profile.")
@@ -115,6 +115,22 @@ with nav_tab2:
         st.info("🥇 Recommendation: **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.")
 
 with nav_tab3:
+    st.header("E-Commerce Growth & Recovery Guides")
+    st.write("Explore our expert articles designed to help Shopify merchants maximize revenue and optimize customer lifecycle value.")
+    
+    st.markdown("---")
+    st.subheader("1. Abandoned Cart Recovery Strategies for Shopify")
+    st.write("Learn how to turn lost checkouts into completed orders using multi-channel automated workflows (Email & SMS).")
+    
+    st.markdown("---")
+    st.subheader("2. Shopify Native Features vs. Third-Party Recovery Apps")
+    st.write("A deep dive into why built-in platform features often fall short and when it's time to upgrade to advanced tools.")
+    
+    st.markdown("---")
+    st.subheader("3. Maximizing Customer Lifetime Value (LTV)")
+    st.write("Tactics on retention, post-purchase segmentation, and email marketing to increase repeat purchases.")
+
+with nav_tab4:
     st.header("Privacy Policy & Legal Notice")
     st.write("""
     **Legal Notice (Impressum):**  
