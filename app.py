@@ -1,7 +1,7 @@
 import streamlit as st
 import sqlite3
 
-# Database setup with A/B variant tracking
+# Database setup
 DB_FILE = "database.db"
 
 def init_db():
@@ -39,7 +39,6 @@ if "b_calc_done" not in st.session_state:
 st.title("📈 Shopify Revenue & Recovery Calculator")
 st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
 
-# Force Variant B (Multi-tab structured interface) as the permanent version
 nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Legal & Privacy"])
 
 with nav_tab1:
@@ -77,6 +76,17 @@ with nav_tab1:
         res_col2.metric("Monthly Recoverable", f"${st.session_state['b_pot_mon']:,.2f}", delta=f"+{(st.session_state['b_pot_mon']/max(st.session_state['b_curr_rev'], 1))*100:.1f}%")
         res_col3.metric("Annual Recoverable", f"${st.session_state['b_annual']:,.2f}")
 
+        # Интегрированный блок подбора софта сразу под цифрами
+        st.divider()
+        st.subheader("🛠️ Find Your Recovery Tool Stack")
+        st.write("Find your ideal software stack based on your store profile.")
+        
+        budget_choice = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud_main")
+        if "Low Budget" in budget_choice:
+            st.info("🥇 Recommendation: **Retainful / Cartly** — Budget-friendly recovery apps.")
+        else:
+            st.info("🥇 Recommendation: **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.")
+
     st.divider()
     st.info("💡 **Want to save this report and unlock personalized software recommendations?**")
     saved_email_b = st.text_input("Enter your email to save report", placeholder="your-email@store.com", key="b_email")
@@ -98,8 +108,8 @@ with nav_tab2:
     st.header("Tool Finder")
     st.write("Find your ideal software stack based on your store profile.")
     
-    budget_choice = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud")
-    if "Low Budget" in budget_choice:
+    budget_choice_tab = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud_tab")
+    if "Low Budget" in budget_choice_tab:
         st.info("🥇 Recommendation: **Retainful / Cartly** — Budget-friendly recovery apps.")
     else:
         st.info("🥇 Recommendation: **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.")
