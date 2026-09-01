@@ -1,0 +1,1 @@
+echo -e "database.db\nkey_01.txt\nmarketing_analysis_cart_recovery.md\n*.db" > .gitignore
