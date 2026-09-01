@@ -196,7 +196,7 @@ with col_imp:
         Igor Widiker<br>
         Erkrath, Germany<br>
         <b>E-Mail:</b> business.iwi@gmail.com<br><br>
-        © 2026 CompareArena.com - All Rights Reserved by CompareArena
+        © 2026 Igor Widiker - All Rights Reserved
         </div>
         """, unsafe_allow_html=True)
 
