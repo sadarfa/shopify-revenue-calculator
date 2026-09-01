@@ -39,7 +39,6 @@ if "b_calc_done" not in st.session_state:
 st.title("📈 Shopify Revenue & Recovery Calculator")
 st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
 
-# Navigation Tabs (removed Legal & Privacy tab)
 nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Guides & Articles"])
 
 with nav_tab1:
@@ -164,12 +163,14 @@ if show_admin:
     else:
         st.info("No leads recorded in the database yet.")
 
-# --- IMPRESSUM (FOOTER) ---
+# --- IMPRESSUM (COLLAPSIBLE / SMALL FONT) ---
 st.markdown("---")
-st.markdown("### **Impressum**")
-st.markdown("""
-**Angaben gemäß § 5 TMG:**  
-Igor Widiker  
-Erkrath, Germany  
-**E-Mail:** business.iwi@gmail.com  
-""")
+with st.expander("Impressum"):
+    st.markdown("""
+    <div style="font-size: 12px; color: gray;">
+    Angaben gemäß § 5 TMG:<br>
+    Igor Widiker<br>
+    Erkrath, Germany<br>
+    E-Mail: business.iwi@gmail.com
+    </div>
+    """, unsafe_allow_html=True)
