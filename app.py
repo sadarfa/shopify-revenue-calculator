@@ -36,6 +36,13 @@ if "ab_variant" not in st.session_state:
 
 current_variant = st.session_state["ab_variant"]
 
+# Set default calculated state so results are visible instantly as an example
+if "calc_done" not in st.session_state:
+    st.session_state["calc_done"] = True
+    st.session_state["curr_rev"] = 112500.00
+    st.session_state["pot_mon"] = 7875.00
+    st.session_state["pot_annual"] = 94500.00
+
 # --- VARIANT A: Single-page high-converting landing (Value First) ---
 if current_variant == "A":
     st.title("📈 Shopify Revenue & Recovery Calculator")
@@ -78,7 +85,7 @@ if current_variant == "A":
         res_col3.metric("Annual Recoverable", f"${st.session_state['pot_annual']:,.2f}")
 
         st.info("💡 **Want to save this report and unlock personalized software recommendations?**")
-        saved_email = st.text_input("Enter your email to save report", placeholder="business.iwi@gmail.com", key="a_email_save")
+        saved_email = st.text_input("Enter your email to save report", placeholder="your-email@store.com", key="a_email_save")
         
         if st.button("Save & Unlock Report", key="a_save_btn"):
             if saved_email:
@@ -130,16 +137,16 @@ else:
             st.session_state["b_annual"] = potential_annual_gain
             st.session_state["b_calc_done"] = True
 
-        if st.session_state.get("b_calc_done", False):
-            st.metric("Annual Recoverable Revenue", f"${st.session_state['b_annual']:,.2f}")
-            saved_email_b = st.text_input("Your Email to save report", placeholder="business.iwi@gmail.com", key="b_email")
+        if st.session_state.get("b_calc_done", True):
+            st.metric("Annual Recoverable Revenue", f"${st.session_state.get('b_annual', 94500.00):,.2f}")
+            saved_email_b = st.text_input("Your Email to save report", placeholder="your-email@store.com", key="b_email")
             if st.button("Save Lead", key="b_save_btn"):
                 if saved_email_b:
                     conn = sqlite3.connect(DB_FILE)
                     cursor = conn.cursor()
                     cursor.execute(
                         "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
-                        (store_url, st.session_state['b_annual'], saved_email_b, current_variant)
+                        (store_url, st.session_state.get('b_annual', 94500.00), saved_email_b, current_variant)
                     )
                     conn.commit()
                     conn.close()
@@ -165,7 +172,6 @@ with st.sidebar:
     st.subheader("Admin Portal")
     admin_password = st.text_input("Admin Password", type="password")
     
-    # Секретный пароль (можешь изменить на любой другой)
     if admin_password == "admin123":
         st.success("Access Granted")
         show_admin = True
