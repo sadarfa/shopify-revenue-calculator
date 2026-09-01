@@ -1,7 +1,8 @@
 import streamlit as st
 import sqlite3
+import random
 
-# Database setup
+# Database setup with A/B variant tracking
 DB_FILE = "database.db"
 
 def init_db():
@@ -13,6 +14,7 @@ def init_db():
             store_url TEXT,
             estimated_revenue REAL,
             email TEXT,
+            variant TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
@@ -25,33 +27,37 @@ init_db()
 st.set_page_config(
     page_title="Shopify Revenue & Recovery Calculator",
     page_icon="📈",
-    layout="wide"
+    layout="centered"
 )
 
-# Navigation setup
-st.title("📈 Shopify Revenue & Recovery Calculator")
-st.write("Analyze potential revenue recovery and explore expert insights for your Shopify store.")
+# A/B Test Session Assignment
+if "ab_variant" not in st.session_state:
+    # 50% chance for Variant A (Single-page landing) or Variant B (Multi-tab)
+    st.session_state["ab_variant"] = random.choice(["A", "B"])
 
-# Объявление пяти вкладок ДО их использования
-nav_tab1, nav_tab2, nav_tab3, nav_tab4, nav_tab5 = st.tabs(["Calculator", "Tool Finder", "SEO Articles", "Admin Leads", "Legal & Privacy"])
+current_variant = st.session_state["ab_variant"]
 
-with nav_tab1:
-    st.header("Revenue & Recovery Calculator")
-    st.write("Estimate how much revenue your Shopify store can recover through automated optimization.")
-    
+# --- VARIANT A: Single-page high-converting landing ---
+if current_variant == "A":
+    st.title("📈 Shopify Revenue & Recovery Calculator")
+    st.write("Calculate your store's hidden losses and see how much revenue you can recover instantly.")
+    st.caption(f"Active Experiment Variant: **{current_variant}** (Single-Page Landing)")
+
+    st.divider()
+
     col1, col2 = st.columns(2)
-    
     with col1:
-        monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=50000, step=5000)
-        conversion_rate = st.slider("Current Conversion Rate (%)", min_value=0.5, max_value=5.0, value=1.5, step=0.1)
-        avg_order_value = st.number_input("Average Order Value ($)", min_value=10.0, value=75.0, step=5.0)
-    
-    with col2:
-        cart_abandonment_rate = st.slider("Cart Abandonment Rate (%)", min_value=50.0, max_value=90.0, value=70.0, step=1.0)
-        store_url = st.text_input("Your Shopify Store URL (optional)", placeholder="my-store.myshopify.com")
-        user_email = st.text_input("Your Email (to save your report)", placeholder="name@example.com")
+        monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=50000, step=5000, key="a_vis")
+        conversion_rate = st.slider("Current Conversion Rate (%)", min_value=0.5, max_value=5.0, value=1.5, step=0.1, key="a_cr")
+        avg_order_value = st.number_input("Average Order Value ($)", min_value=10.0, value=75.0, step=5.0, key="a_aov")
 
-    if st.button("Calculate Recovery Potential", type="primary"):
+    with col2:
+        cart_abandonment_rate = st.slider("Cart Abandonment Rate (%)", min_value=50.0, max_value=90.0, value=70.0, step=1.0, key="a_car")
+        store_url = st.text_input("Shopify Store URL", placeholder="my-store.myshopify.com", key="a_url")
+        user_email = st.text_input("Your Email (to unlock report)", placeholder="business.iwi@gmail.com", key="a_email")
+
+    st.markdown("")
+    if st.button("Calculate Recovery Potential", type="primary", use_container_width=True, key="a_btn"):
         monthly_orders = monthly_visitors * (conversion_rate / 100.0)
         current_monthly_revenue = monthly_orders * avg_order_value
         
@@ -61,180 +67,82 @@ with nav_tab1:
         potential_annual_gain = potential_monthly_gain * 12
 
         st.divider()
+        st.markdown("### 📊 Your Revenue Recovery Results")
+        
         res_col1, res_col2, res_col3 = st.columns(3)
-        res_col1.metric("Current Est. Monthly Revenue", f"${current_monthly_revenue:,.2f}")
-        res_col2.metric("Recoverable Monthly Revenue", f"${potential_monthly_gain:,.2f}", delta=f"+{(potential_monthly_gain/max(current_monthly_revenue, 1))*100:.1f}%")
-        res_col3.metric("Recoverable Annual Revenue", f"${potential_annual_gain:,.2f}")
+        res_col1.metric("Current Monthly Rev", f"${current_monthly_revenue:,.2f}")
+        res_col2.metric("Monthly Recoverable", f"${potential_monthly_gain:,.2f}", delta=f"+{(potential_monthly_gain/max(current_monthly_revenue, 1))*100:.1f}%")
+        res_col3.metric("Annual Recoverable", f"${potential_annual_gain:,.2f}")
 
         if user_email:
             conn = sqlite3.connect(DB_FILE)
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO leads (store_url, estimated_revenue, email) VALUES (?, ?, ?)",
-                (store_url, potential_annual_gain, user_email)
+                "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
+                (store_url, potential_annual_gain, user_email, current_variant)
             )
             conn.commit()
             conn.close()
-            st.success("Your calculation has been saved successfully!")
+            st.success("Your report has been saved successfully!")
 
-with nav_tab2:
-    st.header("Find Your Revenue Recovery Stack")
-    st.write("Answer a few quick questions to find the ideal automation tool tailored to your Shopify store's budget and goals.")
-
-    tf_col1, tf_col2 = st.columns(2)
-
-    with tf_col1:
-        budget_choice = st.selectbox(
-            "What is your monthly software budget?",
-            [
-                "Low Budget (Under $50/month)",
-                "Growth Stage ($50 - $200/month)",
-                "Scale Stage ($200+/month)"
-            ],
-            key="tf_budget"
-        )
-
-    with tf_col2:
-        channel_choice = st.selectbox(
-            "What recovery channels do you want to prioritize?",
-            [
-                "Email Only (Simple & Cost-Effective)",
-                "Email + SMS (Omnichannel Growth)",
-                "Advanced Multi-Channel (Email, SMS, WhatsApp & Automation)"
-            ],
-            key="tf_channel"
-        )
-
-    if st.button("Recommend Best Tool", type="secondary"):
-        st.divider()
-        st.subheader("Your Recommended Solution:")
-
-        if "Low Budget" in budget_choice:
-            st.markdown("### 🥇 **Retainful / Cartly**")
-            st.write("""
-                * **Why it fits:** Perfect for smaller stores looking for straightforward abandoned cart recovery features without breaking the bank.
-                * **Key Highlights:** Easy setup, affordable pricing tiers, essential email reminders, and quick deployment.
-            """)
-        elif "Growth Stage" in budget_choice or "Scale Stage" in budget_choice:
-            if "Email Only" in channel_choice:
-                st.markdown("### 🥇 **Klaviyo**")
-                st.write("""
-                    * **Why it fits:** The gold standard for deep customer data segmentation and advanced email marketing flows.
-                    * **Key Highlights:** Powerful data analytics, robust triggers, and granular audience targeting.
-                """)
-            else:
-                st.markdown("### 🥇 **Omnisend** (Top Recommended Partner)")
-                st.write("""
-                    * **Why it fits:** The ultimate all-in-one marketing automation powerhouse combining high-converting email and SMS workflows designed specifically for Shopify.
-                    * **Key Highlights:** Pre-built automation templates, excellent ROI, thousands of 5-star reviews, and seamless multi-channel scaling.
-                """)
-                st.info("💡 Tip: Omnisend offers deep Shopify integration that bridges the gap between native checkout limits and full revenue recovery.")
-
-with nav_tab3:
-    st.header("Expert SEO & Growth Articles")
-    st.write("Learn how to scale your e-commerce business with proven abandoned cart optimization strategies.")
-
-    article_choice = st.selectbox(
-        "Select an article to read:",
-        [
-            "Does Shopify Have Native Abandoned Cart Recovery?",
-            "Best Shopify Abandoned Cart Apps in 2026",
-            "How to Recover Abandoned Carts Without Heavy Discounts",
-            "Email vs. Multi-Channel Reminders for Checkout Recovery"
-        ],
-        key="seo_article"
-    )
-
-    if article_choice == "Does Shopify Have Native Abandoned Cart Recovery?":
-        st.subheader("Does Shopify Have Native Abandoned Cart Recovery?")
-        st.write("""
-            Yes, Shopify includes basic built-in checkout recovery features, but they come with notable limitations depending on your pricing plan.
-            
-            ### What Native Shopify Offers:
-            - Automatic emails sent to customers who abandon their checkout *after* entering their email address.
-            - Basic email templates that can be customized with your store branding.
-            
-            ### Where It Falls Short:
-            1. **The Gap:** It only triggers at the checkout stage, completely ignoring **browse abandonment** and early cart additions.
-            2. **Limited Customization & Timing:** You cannot easily split-test sequences, set multi-step conditional workflows, or integrate SMS and WhatsApp channels natively without third-party apps.
-            
-            *Solution:* Most growing stores quickly transition to specialized automated recovery tools to capture the missing revenue streams.
-        """)
-    elif article_choice == "Best Shopify Abandoned Cart Apps in 2026":
-        st.subheader("Best Shopify Abandoned Cart Apps in 2026")
-        st.write("""
-            Choosing the right app depends on your store's volume, budget, and required automation depth. 
-            
-            ### Top Contenders on the Market:
-            - **Omnisend:** A robust, all-in-one marketing automation platform powerhouse combining email, SMS, and deep Shopify workflow integrations with thousands of 5-star reviews.
-            - **Klaviyo:** The enterprise-grade choice for advanced data segmentation, though it can carry a steeper learning curve and higher scaling costs.
-            - **Retainful / Cartly:** Excellent lightweight alternatives for smaller stores looking for straightforward recovery features under a tighter budget.
-            
-            Use our **Revenue Recovery Calculator** in the first tab to estimate how much recovered income can easily offset these software costs.
-        """)
-    elif article_choice == "How to Recover Abandoned Carts Without Heavy Discounts":
-        st.subheader("How to Recover Abandoned Carts Without Heavy Discounts")
-        st.write("""
-            Relying solely on discount codes to win back shoppers erodes your profit margins and conditions customers to wait for sales.
-            
-            ### Better Recovery Tactics:
-            1. **Friction Reduction:** Address sudden shipping costs or unexpected taxes transparently earlier in the funnel.
-            2. **Social Proof & Urgency:** Include product reviews, ratings, and limited-stock reminders inside your recovery emails.
-            3. **Customer Support Availability:** Add live chat or quick-answer prompts right at the checkout stage to resolve last-minute hesitations instantly.
-        """)
+    st.divider()
+    st.subheader("🛠️ Find Your Recovery Tool Stack")
+    budget_choice = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="a_bud")
+    if "Low Budget" in budget_choice:
+        st.info("🥇 Recommendation: **Retainful / Cartly** — Budget-friendly recovery apps.")
     else:
-        st.subheader("Email vs. Multi-Channel Reminders for Checkout Recovery")
+        st.info("🥇 Recommendation: **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.")
+
+# --- VARIANT B: Multi-tab structured interface ---
+else:
+    st.title("📈 Shopify Revenue & Recovery Calculator")
+    st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
+    st.caption(f"Active Experiment Variant: **{current_variant}** (Multi-Tab Suite)")
+
+    nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Legal & Privacy"])
+
+    with nav_tab1:
+        st.header("Revenue & Recovery Calculator")
+        col1, col2 = st.columns(2)
+        with col1:
+            monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=50000, step=5000, key="b_vis")
+            conversion_rate = st.slider("Current Conversion Rate (%)", min_value=0.5, max_value=5.0, value=1.5, step=0.1, key="b_cr")
+            avg_order_value = st.number_input("Average Order Value ($)", min_value=10.0, value=75.0, step=5.0, key="b_aov")
+        with col2:
+            cart_abandonment_rate = st.slider("Cart Abandonment Rate (%)", min_value=50.0, max_value=90.0, value=70.0, step=1.0, key="b_car")
+            store_url = st.text_input("Shopify Store URL", placeholder="my-store.myshopify.com", key="b_url")
+            user_email = st.text_input("Your Email", placeholder="business.iwi@gmail.com", key="b_email")
+
+        if st.button("Calculate Revenue", type="primary", key="b_btn"):
+            monthly_orders = monthly_visitors * (conversion_rate / 100.0)
+            current_monthly_revenue = monthly_orders * avg_order_value
+            abandoned_carts = monthly_visitors * (cart_abandonment_rate / 100.0)
+            potential_annual_gain = abandoned_carts * 0.15 * avg_order_value * 12
+            
+            st.metric("Annual Recoverable Revenue", f"${potential_annual_gain:,.2f}")
+            if user_email:
+                conn = sqlite3.connect(DB_FILE)
+                cursor = conn.cursor()
+                cursor.execute(
+                    "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
+                    (store_url, potential_annual_gain, user_email, current_variant)
+                )
+                conn.commit()
+                conn.close()
+                st.success("Saved successfully!")
+
+    with nav_tab2:
+        st.header("Tool Finder")
+        st.write("Find your ideal software stack based on your store profile.")
+        st.info("🥇 Top Recommendation: **Omnisend** for multi-channel Shopify recovery.")
+
+    with nav_tab3:
+        st.header("Privacy Policy & Legal Notice")
         st.write("""
-            Relying exclusively on email is no longer enough as inbox competition grows fiercer.
-            
-            ### Channel Comparison:
-            - **Email:** High ROI, great for detailed product recommendations, storytelling, and rich media.
-            - **SMS / WhatsApp:** Exceptional open rates within the first 15 minutes of abandonment, ideal for time-sensitive cart reminders or flash incentives.
-            
-            Combining email with a gentle SMS reminder typically yields the highest overall recovery conversion rate for mid-sized Shopify stores.
+        **Legal Notice (Impressum):**  
+        Igor Widiker | Erkrath, Germany | E-Mail: business.iwi@gmail.com  
+        Data processing complies with GDPR (DSGVO).
         """)
 
-with nav_tab4:
-    st.header("Admin Leads Overview")
-    st.write("Review collected lead details and estimated recovery values from the calculator.")
-    
-    if st.checkbox("Show Lead Database", key="admin_checkbox"):
-        conn = sqlite3.connect(DB_FILE)
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, store_url, estimated_revenue, email, created_at FROM leads")
-        rows = cursor.fetchall()
-        conn.close()
-        
-        if rows:
-            st.table(rows)
-        else:
-            st.info("No leads recorded in the database yet.")
-
-with nav_tab5:
-    st.header("Privacy Policy & Legal Notice")
-    st.write("""
-    ### 1. Privacy at a Glance
-    **General Information**  
-    The following information provides a simple overview of what happens to your personal data when you visit this website. Personal data comprises any data with which you can be personally identified.
-
-    ### 2. Data Collection on This Website
-    **Who is responsible for data collection on this website?**  
-    Data processing on this website is carried out by the website operator (see Legal Notice below).
-
-    **How do we collect your data?**  
-    Your data is collected when you provide it to us (e.g., by entering your email address and store URL into the calculation form).
-
-    **What do we use your data for?**  
-    Part of the data is collected to ensure the error-free provision of the website. Other data (such as your email address and store details) is used exclusively to save your report and provide relevant software recommendations.
-
-    ### 3. Your Rights
-    You have the right to receive information about the origin, recipient, and purpose of your stored personal data free of charge at any time. You also have the right to request the correction or deletion of this data.
-
-    ---
-
-    ### Legal Notice (Impressum)
-    **Information according to § 5 TMG / GDPR Compliance:**  
-    Igor Widiker  
-    Erkrath, Germany  
-    E-Mail: business.iwi@gmail.com
-    """)
+st.divider()
+st.caption("Legal Notice: Igor Widiker | Erkrath, Germany | business.iwi@gmail.com")
