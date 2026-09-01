@@ -141,14 +141,26 @@ with main_tab1:
     st.markdown("#### **Omnisend** — 🏆 *Best Value Choice*")
     st.markdown("**Pricing Tier:** Standard (€16/mo)")
     st.markdown("**Why it fits:** Email + SMS automation with high ROI for small e-commerce stores.")
-    st.button("Launch Recovery with Omnisend", key="btn_omni")
+    st.markdown("""
+    <a href="https://www.omnisend.com/" target="_blank">
+        <button style="background-color:#ff4b4b; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">
+            Launch Recovery with Omnisend 🚀
+        </button>
+    </a>
+    """, unsafe_allow_html=True)
 
     st.markdown("---")
     
     st.markdown("#### **Retainful** — 💡 *Budget Alternative*")
     st.markdown("**Pricing Tier:** Free / Starter")
     st.markdown("**Why it fits:** Great dynamic coupons and abandoned cart recovery for early stages.")
-    st.button("Launch Recovery with Retainful", key="btn_ret")
+    st.markdown("""
+    <a href="https://www.retainful.com/" target="_blank">
+        <button style="background-color:#f0f2f6; color:#31333F; border:1px solid #d6d6d6; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">
+            Launch Recovery with Retainful 💡
+        </button>
+    </a>
+    """, unsafe_allow_html=True)
 
 with main_tab2:
     st.header("E-Commerce Growth & Recovery Guides")
