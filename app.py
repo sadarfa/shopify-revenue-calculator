@@ -1,209 +1,123 @@
-import streamlit as st
-import sqlite3
-import streamlit.components.v1 as components
+with nav_tab3:
+  st.header("E-Commerce Growth & Recovery Guides")
+  st.write(
+      "Explore our expert articles designed to help Shopify merchants"
+      " maximize revenue and optimize customer lifecycle value."
+  )
 
-# Database setup
-DB_FILE = "database.db"
+  st.markdown("---")
 
-def init_db():
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS leads (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            store_url TEXT,
-            estimated_revenue REAL,
-            email TEXT,
-            variant TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    """)
-    conn.commit()
-    conn.close()
+  # Выбор статьи для чтения
+  article_choice = st.selectbox(
+      "Select a Guide to Read:",
+      [
+          (
+              "1. Best Abandoned Cart Recovery for Shopify Under $50/Month"
+              " (Recommended)"
+          ),
+          (
+              "2. Omnisend vs Klaviyo: Which Is Better for Small Shopify Stores"
+              " in 2026?"
+          ),
+          "3. Shopify Native Features vs. Third-Party Recovery Apps",
+          "4. Maximizing Customer Lifetime Value (LTV)",
+      ],
+      key="guide_select",
+  )
 
-init_db()
+  if "Under $50" in article_choice:
+    st.markdown(
+        "## Best Abandoned Cart Recovery for Shopify Under $50/Month (2026"
+        " Guide)"
+    )
+    st.markdown("*Published by Growth & Recovery Lab | Reading time: 4 mins*")
 
-# Page configuration
-st.set_page_config(
-    page_title="Shopify Revenue Recovery Calculator & Tool Finder",
-    page_icon="📈",
-    layout="wide"
-)
-
-# --- GOOGLE ANALYTICS (GA4) INTEGRATION ---
-GA_ID = "G-XXXXXXXXXX"
-
-ga_code = f"""
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){{dataLayer.push(arguments);}}
-  gtag('js', new Date());
-
-  gtag('config', '{GA_ID}');
-</script>
-"""
-components.html(ga_code, height=0, width=0)
-
-# --- SIDEBAR INPUTS (Store Parameters & Budget) ---
-with st.sidebar:
-    st.markdown("### ⚙️ Your Shopify Store")
-    monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=5000, step=1000, key="b_vis")
-    current_monthly_orders = st.number_input("Current Monthly Orders", min_value=10, value=140, step=10, key="b_orders")
-    avg_order_value = st.number_input("Average Order Value (AOV, €)", min_value=10.0, value=70.0, step=5.0, key="b_aov")
-    
-    st.markdown("---")
-    st.markdown("### 🎯 Budget & Requirements")
-    monthly_budget = st.slider("Monthly Marketing Budget (€)", min_value=0, max_value=500, value=30, step=10, key="b_budget")
-    ai_support = st.checkbox("Do you need AI customer support & live chat?", value=False, key="b_ai")
-
-# --- CALCULATIONS ---
-conversion_rate = (current_monthly_orders / monthly_visitors) * 100 if monthly_visitors > 0 else 1.5
-current_monthly_rev = current_monthly_orders * avg_order_value
-
-estimated_abandoned_carts = monthly_visitors * 0.70
-estimated_lost_revenue = estimated_abandoned_carts * avg_order_value * 0.15
-
-# --- MAIN CONTENT TABS ---
-main_tab1, main_tab2 = st.tabs(["📊 Revenue Recovery Calculator & Tool Finder", "📝 SEO Article Preview"])
-
-with main_tab1:
-    st.markdown("## 🛒 Shopify Revenue Recovery Calculator & Tool Finder")
-    st.write("Estimate your store's lost monthly revenue and discover the ideal automation stack in seconds.")
-    
-    metric_col1, metric_col2 = st.columns(2)
-    with metric_col1:
-        st.markdown(f"""
-        <div style="font-size: 0.9em; color: gray;">📉 Estimated Lost Revenue / mo</div>
-        <div style="font-size: 2.2em; font-weight: bold; color: #222;">€{estimated_lost_revenue:,.2f}</div>
-        <span style="background-color: #ffebee; color: #c62828; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">↑ Growth Potential</span>
-        """, unsafe_allow_html=True)
-    with metric_col2:
-        st.markdown(f"""
-        <div style="font-size: 0.9em; color: gray;">📊 Current Conversion Rate</div>
-        <div style="font-size: 2.2em; font-weight: bold; color: #222;">{conversion_rate:.2f}%</div>
-        """, unsafe_allow_html=True)
+    st.markdown("""
+        ### Why Enterprise Tools Aren't Always the Answer
+        Most e-commerce guides recommend heavy tools costing $150–$300+ per month. If your Shopify store is generating €5k–€10k monthly, spending a huge chunk of your margin on software is a direct path to the red. You need lean, predictable automation that pays for itself with just two or three recovered checkouts.
         
-    st.markdown("---")
-    st.markdown("### 📈 Recovery Scenarios")
-    
-    scen_tab1, scen_tab2, scen_tab3 = st.tabs(["Conservative (Email)", "Base (Omnichannel)", "Optimistic (AI+SMS)"])
-    
-    with scen_tab1:
-        rev_val = estimated_lost_revenue * 0.25
-        orders_val = rev_val / avg_order_value if avg_order_value > 0 else 0
-        st.markdown(f"""
-        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 5px solid #4caf50;">
-        <b>Recovered Revenue:</b> €{rev_val:,.2f} / month ({orders_val:.1f} orders)
-        </div>
-        """, unsafe_allow_html=True)
-        st.write("**Strategy:** Basic email automation (e.g., standard Shopify email)")
-
-    with scen_tab2:
-        rev_val = estimated_lost_revenue * 0.60
-        orders_val = rev_val / avg_order_value if avg_order_value > 0 else 0
-        st.markdown(f"""
-        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 5px solid #4caf50;">
-        <b>Recovered Revenue:</b> €{rev_val:,.2f} / month ({orders_val:.1f} orders)
-        </div>
-        """, unsafe_allow_html=True)
-        st.write("**Strategy:** Multi-channel workflows (Email + SMS sequences)")
-
-    with scen_tab3:
-        rev_val = estimated_lost_revenue * 0.85
-        orders_val = rev_val / avg_order_value if avg_order_value > 0 else 0
-        st.markdown(f"""
-        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 5px solid #4caf50;">
-        <b>Recovered Revenue:</b> €{rev_val:,.2f} / month ({orders_val:.1f} orders)
-        </div>
-        """, unsafe_allow_html=True)
-        st.write("**Strategy:** Full AI automation stack with live chat and predictive triggers")
-
-    st.markdown("---")
-    st.markdown("### 🛠️ Recommended Tools for Your Store")
-    
-    st.markdown("#### **Omnisend** — 🏆 *Best Value Choice*")
-    st.markdown("**Pricing Tier:** Standard (€16/mo)")
-    st.markdown("**Why it fits:** Email + SMS automation with high ROI for small e-commerce stores.")
-    st.link_button("Launch Recovery with Omnisend", "https://www.omnisend.com/")
-
-    st.markdown("---")
-    
-    st.markdown("#### **Retainful** — 💡 *Budget Alternative*")
-    st.markdown("**Pricing Tier:** Free / Starter")
-    st.markdown("**Why it fits:** Great dynamic coupons and abandoned cart recovery for early stages.")
-    st.link_button("Launch Recovery with Retainful", "https://www.retainful.com/")
-
-with main_tab2:
-    st.header("E-Commerce Growth & Recovery Guides")
-    st.write("Explore our expert articles designed to help Shopify merchants maximize revenue and optimize customer lifecycle value.")
-    
-    st.markdown("---")
-    st.subheader("1. Abandoned Cart Recovery Strategies for Shopify")
-    st.write("Learn how to turn lost checkouts into completed orders using multi-channel automated workflows (Email & SMS).")
-    
-    st.markdown("---")
-    st.subheader("2. Shopify Native Features vs. Third-Party Recovery Apps")
-    st.write("A deep dive into why built-in platform features often fall short and when it's time to upgrade to advanced tools.")
-    
-    st.markdown("---")
-    st.subheader("3. Maximizing Customer Lifetime Value (LTV)")
-    st.write("Tactics on retention, post-purchase segmentation, and email marketing to increase repeat purchases.")
-
-st.divider()
-
-# --- HIDDEN ADMIN PANEL ---
-query_params = st.query_params
-if query_params.get("portal") == "secret_admin":
-    with st.sidebar:
-        st.markdown("---")
-        st.subheader("🔐 Admin Analytics Dashboard")
-        admin_password = st.text_input("Admin Password", type="password")
+        ### Top Budget-Friendly Recovery Solutions (<$50/mo)
         
-        if admin_password == "admin123":
-            st.success("Access Granted")
-            conn = sqlite3.connect(DB_FILE)
-            cursor = conn.cursor()
-            
-            cursor.execute("SELECT COUNT(*), SUM(estimated_revenue) FROM leads")
-            total_leads, total_rev = cursor.fetchone()
-            total_rev_display = total_rev if total_rev else 0.0
-            st.write(f"- **Total Leads:** {total_leads}")
-            st.write(f"- **Est. Potential:** ${total_rev_display:,.2f}")
-            
-            cursor.execute("SELECT id, store_url, estimated_revenue, email, created_at FROM leads")
-            rows = cursor.fetchall()
-            conn.close()
-            
-            if rows:
-                st.table(rows)
-            else:
-                st.info("No leads recorded yet.")
-        else:
-            st.warning("Enter admin password.")
+        #### 1. Omnisend (Standard Plan — Starting at $16/mo)
+        * **Why it fits:** It's our top recommendation for growing stores. You get automated multi-channel workflows (Email + SMS), pre-built abandoned cart & checkout sequences, and a generous free tier up to 250 contacts.
+        * **Verdict:** Unbeatable feature-to-price ratio if you want room to scale without switching platforms later.
+        
+        #### 2. Retainful (Starting at $9/mo)
+        * **Why it fits:** Perfect if you want pure email-based recovery without paying for advanced enterprise features you won't use. 
+        * **Verdict:** Lightweight, straightforward setup directly inside Shopify.
+        
+        #### 3. Shopify Native Abandoned Checkout (Free)
+        * **Why it fits:** Shopify includes a basic automated email reminder out of the box.
+        * **Verdict:** Good for day one, but lacks advanced segmentation, multi-channel SMS triggers, and custom exit-intent popups needed long-term.
+        
+        ---
+        ### 💡 Ready to find your exact fit?
+        Don't guess your numbers. Use our **[Revenue & Recovery Calculator](#)** (Tab 1) to see how much uncaptured revenue you're leaving on the table right now, or check out our automated **Tool Finder** (Tab 2).
+        """)
 
-# --- FOOTER ---
-st.markdown("---")
+  elif "Omnisend vs Klaviyo" in article_choice:
+    st.markdown(
+        "## Omnisend vs Klaviyo: Which Is Better for Small Shopify Stores in"
+        " 2026?"
+    )
+    st.markdown("*Published by Growth & Recovery Lab | Reading time: 6 mins*")
 
-col_imp, col_dsg = st.columns(2)
+    st.markdown("""
+        ### Executive Summary
+        Both **Klaviyo** and **Omnisend** are top-tier marketing automation platforms built specifically for Shopify. However, they serve very different business scales:
+        * **Klaviyo** is an enterprise data engine designed for stores with dedicated marketing teams and larger budgets.
+        * **Omnisend** is a streamlined, highly profitable growth stack built for solo founders, small teams, and stores under $100k/mo.
 
-with col_imp:
-    with st.expander("Impressum"):
-        st.markdown("""
-        <div style="font-size: 0.85em; color: #555;">
-        Information according to § 5 TMG:<br>
-        Igor Widiker<br>
-        Erkrath, Germany<br>
-        <b>E-Mail:</b> business.iwi@gmail.com
-        </div>
-        """, unsafe_allow_html=True)
+        ---
 
-with col_dsg:
-    with st.expander("Data Protection (DSGVO)"):
-        st.markdown("""
-        <div style="font-size: 0.85em; color: #555;">
-        <b>Data Privacy Policy:</b><br>
-        We process user data strictly in accordance with the GDPR (DSGVO). Collected lead information is used solely for reporting and communication purposes. No third-party sharing without consent.
-        </div>
-        """, unsafe_allow_html=True)
+        ### 1. Pricing Structure & Hidden Costs
+        
+        | Feature / Plan | **Omnisend** | **Klaviyo** |
+        | :--- | :--- | :--- |
+        | **Starting Price** | **$16 / month** | **$20 / month** |
+        | **Pricing Metric** | Total emails sent per tier | Total active contacts stored |
+        | **SMS Integration** | Free SMS credits included in Pro plan | Paid separately via extra credit packs |
+        | **Support** | 24/7 Live Chat (all plans, including Free) | Email-only on lower tiers / slower responses |
+
+        **The Verdict on Pricing:** Klaviyo’s pricing scales aggressively based on total profile storage, regardless of how often you email them. Omnisend provides a far smoother pricing curve, making it significantly cheaper as your email list expands.
+
+        ---
+
+        ### 2. Abandoned Cart & Recovery Workflows
+        * **Omnisend:** Features pre-built, one-click automation templates for *Browse Abandonment*, *Cart Abandonment*, and *Checkout Abandonment*. You can combine Email + SMS + Push Notifications inside a single visual flowchart in under 15 minutes.
+        * **Klaviyo:** Offers deep custom event triggers and advanced conditional branching. While powerful, setting up full multi-channel workflows often requires technical configuration and ongoing testing.
+
+        ---
+
+        ### 3. Final Recommendation: Which Should You Choose?
+
+        * **Choose Klaviyo if:** You manage an established brand ($100k+/month), have a dedicated data analyst or email marketer, and need granular predictive analytics.
+        * **Choose Omnisend if:** You are a solo merchant or small team running a Shopify store under $50k/month, and you want high-converting abandoned cart recovery with minimal setup overhead and predictable costs.
+
+        ---
+        ### 🎯 Calculate Your Exact ROI
+        Unsure how much revenue an automated workflow would actually recover for your store? 
+        Head back to **Tab 1 (Calculator)** to run your numbers through our сustom scenarios!
+        """)
+
+  elif "Native Features" in article_choice:
+    st.markdown("## Shopify Native Features vs. Third-Party Recovery Apps")
+    st.write(
+        "A deep dive into why built-in platform features often fall short and"
+        " when it's time to upgrade to advanced tools."
+    )
+    st.markdown(
+        "*(Full article text loading... Focus on calculator metrics to"
+        " evaluate your current setup).*"
+    )
+
+  else:
+    st.markdown("## Maximizing Customer Lifetime Value (LTV)")
+    st.write(
+        "Tactics on retention, post-purchase segmentation, and email marketing"
+        " to increase repeat purchases."
+    )
+    st.markdown(
+        "*(Full article text loading... Use the Tool Finder to match your store"
+        " with top retention apps).*"
+    )
