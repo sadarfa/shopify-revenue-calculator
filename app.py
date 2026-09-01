@@ -48,7 +48,7 @@ components.html(ga_code, height=0, width=0)
 
 # --- SIDEBAR INPUTS (Store Parameters & Budget) ---
 with st.sidebar:
-    st.markdown("### ⚙️ Store Parameters")
+    st.markdown("### ⚙️ Your Shopify Store")
     monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=5000, step=1000, key="b_vis")
     current_monthly_orders = st.number_input("Current Monthly Orders", min_value=10, value=140, step=10, key="b_orders")
     avg_order_value = st.number_input("Average Order Value (AOV, €)", min_value=10.0, value=70.0, step=5.0, key="b_aov")
