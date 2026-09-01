@@ -33,7 +33,7 @@ st.title("📈 Shopify Revenue & Recovery Calculator")
 st.write("Analyze potential revenue recovery and explore expert insights for your Shopify store.")
 
 # Объявление пяти вкладок ДО их использования
-nav_tab1, nav_tab2, nav_tab3, nav_tab4, nav_tab5 = st.tabs(["Calculator", "Tool Finder", "SEO Articles", "Admin Leads", "DSGVO & Legal"])
+nav_tab1, nav_tab2, nav_tab3, nav_tab4, nav_tab5 = st.tabs(["Calculator", "Tool Finder", "SEO Articles", "Admin Leads", "Legal & Privacy"])
 
 with nav_tab1:
     st.header("Revenue & Recovery Calculator")
@@ -211,30 +211,30 @@ with nav_tab4:
             st.info("No leads recorded in the database yet.")
 
 with nav_tab5:
-    st.header("Datenschutzerklärung & Impressum (DSGVO)")
+    st.header("Privacy Policy & Legal Notice")
     st.write("""
-    ### 1. Datenschutz auf einen Blick
-    **Allgemeine Hinweise**  
-    Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.
+    ### 1. Privacy at a Glance
+    **General Information**  
+    The following information provides a simple overview of what happens to your personal data when you visit this website. Personal data comprises any data with which you can be personally identified.
 
-    ### 2. Datenerfassung auf dieser Website
-    **Wer ist verantwortlich für die Datenerfassung auf dieser Website?**  
-    Die Datenverarbeitung auf dieser Website erfolgt durch den Website-Betreiber (Kontakt siehe Impressum unten).
+    ### 2. Data Collection on This Website
+    **Who is responsible for data collection on this website?**  
+    Data processing on this website is carried out by the website operator (see Legal Notice below).
 
-    **Wie erfassen wir Ihre Daten?**  
-    Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen (z. B. durch Eingabe Ihrer E-Mail-Adresse und Ihrer Shop-URL im Berechnungsformular).
+    **How do we collect your data?**  
+    Your data is collected when you provide it to us (e.g., by entering your email address and store URL into the calculation form).
 
-    **Wofür nutzen wir Ihre Daten?**  
-    Ein Teil der Daten wird erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten. Andere Daten (Ihre E-Mail-Adresse und Shop-Daten) werden ausschließlich zur Speicherung Ihres Berichts und zur Bereitstellung relevanter Software-Empfehlungen genutzt.
+    **What do we use your data for?**  
+    Part of the data is collected to ensure the error-free provision of the website. Other data (such as your email address and store details) is used exclusively to save your report and provide relevant software recommendations.
 
-    ### 3. Ihre Rechte
-    Sie haben jederzeit das Recht, unentgeltlich Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten zu erhalten. Sie haben außerdem ein Recht, die Berichtigung oder Löschung dieser Daten zu verlangen.
+    ### 3. Your Rights
+    You have the right to receive information about the origin, recipient, and purpose of your stored personal data free of charge at any time. You also have the right to request the correction or deletion of this data.
 
     ---
 
-    ### Impressum
-    **Angaben gemäß § 5 TMG / Angaben nach DSGVO:**  
+    ### Legal Notice (Impressum)
+    **Information according to § 5 TMG / GDPR Compliance:**  
     Igor Widiker  
-    Erkrath, Deutschland  
+    Erkrath, Germany  
     E-Mail: business.iwi@gmail.com
     """)
