@@ -32,8 +32,8 @@ st.set_page_config(
 st.title("📈 Shopify Revenue & Recovery Calculator")
 st.write("Analyze potential revenue recovery and explore expert insights for your Shopify store.")
 
-# Объявление вкладок ДО их использования
-nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "SEO Articles", "Admin Leads"])
+# Объявление четырех вкладок ДО их использования
+nav_tab1, nav_tab2, nav_tab3, nav_tab4 = st.tabs(["Calculator", "Tool Finder", "SEO Articles", "Admin Leads"])
 
 with nav_tab1:
     st.header("Revenue & Recovery Calculator")
@@ -78,6 +78,58 @@ with nav_tab1:
             st.success("Your calculation has been saved successfully!")
 
 with nav_tab2:
+    st.header("Find Your Revenue Recovery Stack")
+    st.write("Answer a few quick questions to find the ideal automation tool tailored to your Shopify store's budget and goals.")
+
+    tf_col1, tf_col2 = st.columns(2)
+
+    with tf_col1:
+        budget_choice = st.selectbox(
+            "What is your monthly software budget?",
+            [
+                "Low Budget (Under $50/month)",
+                "Growth Stage ($50 - $200/month)",
+                "Scale Stage ($200+/month)"
+            ]
+        )
+
+    with tf_col2:
+        channel_choice = st.selectbox(
+            "What recovery channels do you want to prioritize?",
+            [
+                "Email Only (Simple & Cost-Effective)",
+                "Email + SMS (Omnichannel Growth)",
+                "Advanced Multi-Channel (Email, SMS, WhatsApp & Automation)"
+            ]
+        )
+
+    if st.button("Recommend Best Tool", type="secondary"):
+        st.divider()
+        st.subheader("Your Recommended Solution:")
+
+        if "Low Budget" in budget_choice:
+            st.markdown("### 🥇 **Retainful / Cartly**")
+            st.write("""
+                * **Why it fits:** Perfect for smaller stores looking for straightforward abandoned cart recovery features without breaking the bank.
+                * **Key Highlights:** Easy setup, affordable pricing tiers, essential email reminders, and quick deployment.
+            """)
+        elif "Growth Stage" in budget_choice or "Scale Stage" in budget_choice:
+            if "Email Only" in channel_choice:
+                st.markdown("### 🥇 **Klaviyo**")
+                st.write("""
+                    * **Why it fits:** The gold standard for deep customer data segmentation and advanced email marketing flows.
+                    * **Key Highlights:** Powerful data analytics, robust triggers, and granular audience targeting.
+                """)
+            else:
+                st.markdown("### 🥇 **Omnisend** (Top Recommended Partner)")
+                st.write("""
+                    * **Why it fits:** The ultimate all-in-one marketing automation powerhouse combining high-converting email and SMS workflows designed specifically for Shopify.
+                    * **Key Highlights:** Pre-built automation templates, excellent ROI, thousands of 5-star reviews, and seamless multi-channel scaling.
+                """)
+                # Здесь в будущем будет вставлена партнерская ссылка
+                st.info("💡 Tip: Omnisend offers deep Shopify integration that bridges the gap between native checkout limits and full revenue recovery.")
+
+with nav_tab3:
     st.header("Expert SEO & Growth Articles")
     st.write("Learn how to scale your e-commerce business with proven abandoned cart optimization strategies.")
 
@@ -140,7 +192,7 @@ with nav_tab2:
             Combining email with a gentle SMS reminder typically yields the highest overall recovery conversion rate for mid-sized Shopify stores.
         """)
 
-with nav_tab3:
+with nav_tab4:
     st.header("Admin Leads Overview")
     st.write("Review collected lead details and estimated recovery values from the calculator.")
     
