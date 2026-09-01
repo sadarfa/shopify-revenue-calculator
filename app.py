@@ -1,64 +1,139 @@
 import streamlit as st
+import sqlite3
 
-# Настройка страницы
+# --- STARLETTE / FASTAPI HOOK FÜR STATISCHE VERIFIZIERUNG ---
+try:
+    from streamlit.runtime.scriptrunner import get_script_run_ctx
+    ctx = get_script_run_ctx()
+    if ctx and hasattr(ctx, "session_id"):
+        import streamlit.runtime.runtime as runtime
+        session = runtime.get_instance()._session_mgr.get_session(ctx.session_id)
+        if session and hasattr(session, "app"):
+            app = session.app
+            @app.get("/impact-verification.txt")
+            async def impact_verify():
+                from starlette.responses import PlainTextResponse
+                return PlainTextResponse("Impact-Site-Verification: b7541e6d-2c99-4189-bec6-fb8049fd966d")
+except Exception:
+    pass
+
+# Database setup
+DB_FILE = "database.db"
+
+def init_db():
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS leads (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            store_url TEXT,
+            estimated_revenue REAL,
+            email TEXT,
+            variant TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# Page configuration
 st.set_page_config(
-    page_title="Shopify Recovery & ROI Calculator 2026",
-    page_icon="📊",
+    page_title="Shopify Revenue Recovery Calculator & Tool Finder",
+    page_icon="📈",
     layout="wide"
 )
 
-# Создание вкладок
-main_tab1, main_tab2 = st.tabs([
-    "📊 Revenue Calculator & Tool Finder", 
-    "📝 SEO Article & Guide"
-])
-
-# ================= TAB 1: КАЛЬКУЛЯТОР =================
-with main_tab1:
-    st.title("📊 Shopify Abandoned Cart Recovery & ROI Calculator")
-    st.write("Calculate how much revenue you are losing to abandoned carts and find the ideal app stack for your budget.")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.subheader("Store Metrics")
-        monthly_visitors = st.number_input("Monthly Store Visitors", min_value=100, max_value=1000000, value=10000, step=500)
-        conversion_rate = st.slider("Average Conversion Rate (%)", min_value=0.5, max_value=10.0, value=2.0, step=0.1)
-        aov = st.number_input("Average Order Value ($ AOV)", min_value=10, max_value=1000, value=75, step=5)
-        abandonment_rate = st.slider("Cart Abandonment Rate (%)", min_value=50.0, max_value=90.0, value=70.0, step=1.0)
-
-    # Расчеты
-    total_orders = monthly_visitors * (conversion_rate / 100.0)
-    monthly_revenue = total_orders * aov
+# --- SIDEBAR INPUTS (Store Parameters & Budget) ---
+with st.sidebar:
+    st.markdown("### ⚙️ Your Shopify Store")
+    monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=5000, step=1000, key="b_vis")
+    current_monthly_orders = st.number_input("Current Monthly Orders", min_value=10, value=140, step=10, key="b_orders")
+    avg_order_value = st.number_input("Average Order Value (AOV, €)", min_value=10.0, value=70.0, step=5.0, key="b_aov")
     
-    # Считаем брошенные корзины (покупатели, которые дошли до чекаута, но ушли)
-    # Формула: если conversion_rate = 2%, то это завершенные заказы. Брошенные корзины составляют abandonment_rate от всех начатых чекаутов.
-    initiated_checkouts = total_orders / (1 - (abandonment_rate / 100.0))
-    lost_orders = initiated_checkouts * (abandonment_rate / 100.0)
-    lost_revenue = lost_orders * aov
+    st.markdown("---")
+    st.markdown("### 🎯 Budget & Requirements")
+    monthly_budget = st.slider("Monthly Marketing Budget (€)", min_value=0, max_value=500, value=30, step=10, key="b_budget")
+    ai_support = st.checkbox("Do you need AI customer support & live chat?", value=False, key="b_ai")
 
-    # Потенциальное восстановление (обычно возвращают 5-15% брошенных корзин)
-    recovered_orders = lost_orders * 0.10
-    recovered_revenue = recovered_orders * aov
+# --- CALCULATIONS ---
+conversion_rate = (current_monthly_orders / monthly_visitors) * 100 if monthly_visitors > 0 else 1.5
+current_monthly_rev = current_monthly_orders * avg_order_value
 
-    with col2:
-        st.subheader("Financial Impact")
-        st.metric(label="Estimated Monthly Revenue", value=f"${monthly_revenue:,.2f}")
-        st.metric(label="Estimated Lost Monthly Revenue", value=f"${lost_revenue:,.2f}", delta_color="inverse")
-        st.metric(label="Potential Recovered Revenue (10% recovery)", value=f"${recovered_revenue:,.2f}", delta="Profit boost")
+estimated_abandoned_carts = monthly_visitors * 0.70
+estimated_lost_revenue = estimated_abandoned_carts * avg_order_value * 0.15
+
+# --- MAIN CONTENT TABS (WICHTIG: Hier werden main_tab1 und main_tab2 definiert) ---
+main_tab1, main_tab2 = st.tabs(["📊 Revenue Recovery Calculator & Tool Finder", "📝 SEO Article & Guide"])
+
+with main_tab1:
+    st.markdown("## 🛒 Shopify Revenue Recovery Calculator & Tool Finder")
+    st.write("Estimate your store's lost monthly revenue and discover the ideal automation stack in seconds.")
+    
+    metric_col1, metric_col2 = st.columns(2)
+    with metric_col1:
+        st.markdown(f"""
+        <div style="font-size: 0.9em; color: gray;">📉 Estimated Lost Revenue / mo</div>
+        <div style="font-size: 2.2em; font-weight: bold; color: #222;">€{estimated_lost_revenue:,.2f}</div>
+        <span style="background-color: #ffebee; color: #c62828; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">↑ Growth Potential</span>
+        """, unsafe_allow_html=True)
+    with metric_col2:
+        st.markdown(f"""
+        <div style="font-size: 0.9em; color: gray;">📊 Current Conversion Rate</div>
+        <div style="font-size: 2.2em; font-weight: bold; color: #222;">{conversion_rate:.2f}%</div>
+        """, unsafe_allow_html=True)
+        
+    st.markdown("---")
+    st.markdown("### 📈 Recovery Scenarios")
+    
+    scen_tab1, scen_tab2, scen_tab3 = st.tabs(["Conservative (Email)", "Base (Omnichannel)", "Optimistic (AI+SMS)"])
+    
+    with scen_tab1:
+        rev_val = estimated_lost_revenue * 0.25
+        orders_val = rev_val / avg_order_value if avg_order_value > 0 else 0
+        st.markdown(f"""
+        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 5px solid #4caf50;">
+        <b>Recovered Revenue:</b> €{rev_val:,.2f} / month ({orders_val:.1f} orders)
+        </div>
+        """, unsafe_allow_html=True)
+        st.write("**Strategy:** Basic email automation (e.g., standard Shopify email)")
+
+    with scen_tab2:
+        rev_val = estimated_lost_revenue * 0.60
+        orders_val = rev_val / avg_order_value if avg_order_value > 0 else 0
+        st.markdown(f"""
+        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 5px solid #4caf50;">
+        <b>Recovered Revenue:</b> €{rev_val:,.2f} / month ({orders_val:.1f} orders)
+        </div>
+        """, unsafe_allow_html=True)
+        st.write("**Strategy:** Multi-channel workflows (Email + SMS sequences)")
+
+    with scen_tab3:
+        rev_val = estimated_lost_revenue * 0.85
+        orders_val = rev_val / avg_order_value if avg_order_value > 0 else 0
+        st.markdown(f"""
+        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 5px solid #4caf50;">
+        <b>Recovered Revenue:</b> €{rev_val:,.2f} / month ({orders_val:.1f} orders)
+        </div>
+        """, unsafe_allow_html=True)
+        st.write("**Strategy:** Full AI automation stack with live chat and predictive triggers")
 
     st.markdown("---")
-    st.subheader("Recommended Tool Stack for Your Size")
+    st.markdown("### 🛠️ Recommended Tools for Your Store")
     
-    if monthly_visitors < 5000:
-        st.info("💡 **Recommendation:** Since you are starting out lean, use **Shopify Email** (for zero fixed cost) or **Retainful** (for dynamic coupons under $20/mo).")
-    elif monthly_visitors < 25000:
-        st.success("🔥 **Recommendation:** Your store is growing fast. **Omnisend Standard** ($16/mo) gives you the best multi-channel ROI (Email + SMS) without overpaying.")
-    else:
-        st.warning("⚡ **Recommendation:** High traffic volume detected. Consider advanced automated workflows with Omnisend Pro or Klaviyo to capture maximum high-value carts.")
+    st.markdown("#### **Omnisend** — 🏆 *Best Value Choice*")
+    st.markdown("**Pricing Tier:** Standard (€16/mo)")
+    st.markdown("**Why it fits:** Email + SMS automation with high ROI for small e-commerce stores.")
+    st.link_button("Launch Recovery with Omnisend", "https://www.omnisend.com/")
 
+    st.markdown("---")
+    
+    st.markdown("#### **Retainful** — 💡 *Budget Alternative*")
+    st.markdown("**Pricing Tier:** Free / Starter")
+    st.markdown("**Why it fits:** Great dynamic coupons and abandoned cart recovery for early stages.")
+    st.link_button("Launch Recovery with Retainful", "https://www.retainful.com/")
 
-# ================= TAB 2: ПОЛНАЯ СТАТЬЯ =================
 with main_tab2:
     st.markdown("## Best Abandoned Cart Recovery Apps for Shopify Under $50/Month (2026 Guide)")
     st.caption("Published by Shopify Growth Lab | 7 min read")
@@ -116,3 +191,31 @@ with main_tab2:
         <p style="color: #666; margin-bottom: 0;">Use our interactive calculator to find your exact lost revenue and ideal tool stack.</p>
     </div>
     """, unsafe_allow_html=True)
+
+st.divider()
+
+# --- FOOTER ---
+col_imp, col_dsg = st.columns(2)
+
+with col_imp:
+    with st.expander("Impressum"):
+        st.markdown("""
+        <div style="font-size: 0.85em; color: #555;">
+        Information according to § 5 TMG:<br>
+        Igor Widiker<br>
+        Erkrath, Germany<br>
+        <b>E-Mail:</b> business.iwi@gmail.com<br><br>
+        © 2026 IgorWidiker.com - All Rights Reserved by IgorWidiker
+        </div>
+        """, unsafe_allow_html=True)
+
+with col_dsg:
+    with st.expander("Data Protection (DSGVO)"):
+        st.markdown("""
+        <div style="font-size: 0.85em; color: #555;">
+        <b>Data Privacy Policy:</b><br>
+        We process user data strictly in accordance with the GDPR (DSGVO). Collected lead information is used solely for reporting and communication purposes. No third-party sharing without consent.
+        </div>
+        """, unsafe_allow_html=True)
+
+st.markdown("Impact-Site-Verification: b7541e6d-2c99-4189-bec6-fb8049fd966d")
