@@ -30,10 +30,13 @@ st.set_page_config(
     layout="wide"
 )
 
-# --- GOOGLE ANALYTICS (GA4) INTEGRATION ---
+# --- SITE VERIFICATION & GOOGLE ANALYTICS (GA4) INTEGRATION ---
 GA_ID = "G-XXXXXXXXXX"
 
-ga_code = f"""
+head_code = f"""
+<!-- Impact Site Verification -->
+<meta name="impact-site-verification" content="b7541e6d-2c99-4189-bec6-fb8049fd966d">
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
 <script>
@@ -44,7 +47,7 @@ ga_code = f"""
   gtag('config', '{GA_ID}');
 </script>
 """
-components.html(ga_code, height=0, width=0)
+components.html(head_code, height=0, width=0)
 
 # --- SIDEBAR INPUTS (Store Parameters & Budget) ---
 with st.sidebar:
