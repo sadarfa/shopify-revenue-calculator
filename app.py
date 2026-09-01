@@ -30,9 +30,8 @@ st.set_page_config(
     layout="centered"
 )
 
-# A/B Test Session Assignment
+# A/B Test Session Assignment (hidden from user)
 if "ab_variant" not in st.session_state:
-    # 50% chance for Variant A (Single-page landing) or Variant B (Multi-tab)
     st.session_state["ab_variant"] = random.choice(["A", "B"])
 
 current_variant = st.session_state["ab_variant"]
@@ -41,7 +40,6 @@ current_variant = st.session_state["ab_variant"]
 if current_variant == "A":
     st.title("📈 Shopify Revenue & Recovery Calculator")
     st.write("Calculate your store's hidden losses and see how much revenue you can recover instantly.")
-    st.caption(f"Active Experiment Variant: **{current_variant}** (Single-Page Landing)")
 
     st.divider()
 
@@ -97,7 +95,6 @@ if current_variant == "A":
 else:
     st.title("📈 Shopify Revenue & Recovery Calculator")
     st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
-    st.caption(f"Active Experiment Variant: **{current_variant}** (Multi-Tab Suite)")
 
     nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Legal & Privacy"])
 
@@ -145,4 +142,33 @@ else:
         """)
 
 st.divider()
+
+# --- ADMIN ANALYTICS PANEL ---
+with st.expander("🔐 Admin & A/B Test Analytics Dashboard"):
+    st.write("Review collected leads and performance breakdown by experiment variant.")
+    
+    conn = sqlite3.connect(DB_FILE)
+    cursor = conn.cursor()
+    
+    # Summary stats per variant
+    cursor.execute("SELECT variant, COUNT(*), SUM(estimated_revenue) FROM leads GROUP BY variant")
+    stats = cursor.fetchall()
+    
+    if stats:
+        st.markdown("### Variant Performance Summary")
+        for row in stats:
+            variant_name, lead_count, total_rev = row
+            rev_display = total_rev if total_rev else 0.0
+            st.write(f"- **Variant {variant_name}:** {lead_count} leads | Total Est. Potential: ${rev_display:,.2f}")
+    
+    st.markdown("### Raw Leads Database")
+    cursor.execute("SELECT id, store_url, estimated_revenue, email, variant, created_at FROM leads")
+    rows = cursor.fetchall()
+    conn.close()
+    
+    if rows:
+        st.table(rows)
+    else:
+        st.info("No leads recorded in the database yet.")
+
 st.caption("Legal Notice: Igor Widiker | Erkrath, Germany | business.iwi@gmail.com")
