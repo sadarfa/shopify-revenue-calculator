@@ -236,5 +236,5 @@ with nav_tab5:
     **Angaben gemäß § 5 TMG / Angaben nach DSGVO:**  
     Igor Widiker  
     Erkrath, Deutschland  
-    E-Mail: (Wird für den Support über die App bereitgestellt)
+    E-Mail: business.iwi@gmail.com
     """)
