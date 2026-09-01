@@ -23,27 +23,12 @@ def init_db():
 
 init_db()
 
-# Page configuration (sidebar starts collapsed)
+# Page configuration
 st.set_page_config(
     page_title="Shopify Revenue Recovery Calculator & Tool Finder",
     page_icon="📈",
-    layout="wide",
-    initial_sidebar_state="collapsed"
+    layout="wide"
 )
-
-# --- JAVASCRIPT: AUTO-EXPAND SIDEBAR AFTER 3 SECONDS ---
-sidebar_timer_js = """
-<script>
-setTimeout(function() {
-    const doc = window.parent.document;
-    const expandButton = doc.querySelector('[data-testid="collapsedControl"]');
-    if (expandButton) {
-        expandButton.click();
-    }
-}, 3000);
-</script>
-"""
-components.html(sidebar_timer_js, height=0, width=0)
 
 # --- GOOGLE ANALYTICS (GA4) INTEGRATION ---
 GA_ID = "G-XXXXXXXXXX"
@@ -141,26 +126,14 @@ with main_tab1:
     st.markdown("#### **Omnisend** — 🏆 *Best Value Choice*")
     st.markdown("**Pricing Tier:** Standard (€16/mo)")
     st.markdown("**Why it fits:** Email + SMS automation with high ROI for small e-commerce stores.")
-    st.markdown("""
-    <a href="https://www.omnisend.com/" target="_blank">
-        <button style="background-color:#ff4b4b; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">
-            Launch Recovery with Omnisend 🚀
-        </button>
-    </a>
-    """, unsafe_allow_html=True)
+    st.link_button("Launch Recovery with Omnisend", "https://www.omnisend.com/")
 
     st.markdown("---")
     
     st.markdown("#### **Retainful** — 💡 *Budget Alternative*")
     st.markdown("**Pricing Tier:** Free / Starter")
     st.markdown("**Why it fits:** Great dynamic coupons and abandoned cart recovery for early stages.")
-    st.markdown("""
-    <a href="https://www.retainful.com/" target="_blank">
-        <button style="background-color:#f0f2f6; color:#31333F; border:1px solid #d6d6d6; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold;">
-            Launch Recovery with Retainful 💡
-        </button>
-    </a>
-    """, unsafe_allow_html=True)
+    st.link_button("Launch Recovery with Retainful", "https://www.retainful.com/")
 
 with main_tab2:
     st.header("E-Commerce Growth & Recovery Guides")
