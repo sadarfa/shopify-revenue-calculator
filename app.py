@@ -23,12 +23,27 @@ def init_db():
 
 init_db()
 
-# Page configuration
+# Page configuration (sidebar starts collapsed)
 st.set_page_config(
     page_title="Shopify Revenue Recovery Calculator & Tool Finder",
     page_icon="📈",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
+
+# --- JAVASCRIPT: AUTO-EXPAND SIDEBAR AFTER 3 SECONDS ---
+sidebar_timer_js = """
+<script>
+setTimeout(function() {
+    const doc = window.parent.document;
+    const expandButton = doc.querySelector('[data-testid="collapsedControl"]');
+    if (expandButton) {
+        expandButton.click();
+    }
+}, 3000);
+</script>
+"""
+components.html(sidebar_timer_js, height=0, width=0)
 
 # --- GOOGLE ANALYTICS (GA4) INTEGRATION ---
 GA_ID = "G-XXXXXXXXXX"
@@ -59,13 +74,11 @@ with st.sidebar:
     ai_support = st.checkbox("Do you need AI customer support & live chat?", value=False, key="b_ai")
 
 # --- CALCULATIONS ---
-# Derive conversion rate based on orders / visitors
 conversion_rate = (current_monthly_orders / monthly_visitors) * 100 if monthly_visitors > 0 else 1.5
 current_monthly_rev = current_monthly_orders * avg_order_value
 
-# Abandoned cart estimation (~70% cart abandonment rate assumed)
 estimated_abandoned_carts = monthly_visitors * 0.70
-estimated_lost_revenue = estimated_abandoned_carts * avg_order_value * 0.15 # ~15% recoverable potential
+estimated_lost_revenue = estimated_abandoned_carts * avg_order_value * 0.15
 
 # --- MAIN CONTENT TABS ---
 main_tab1, main_tab2 = st.tabs(["📊 Revenue Recovery Calculator & Tool Finder", "📝 SEO Article Preview"])
@@ -74,7 +87,6 @@ with main_tab1:
     st.markdown("## 🛒 Shopify Revenue Recovery Calculator & Tool Finder")
     st.write("Estimate your store's lost monthly revenue and discover the ideal automation stack in seconds.")
     
-    # Top Metrics Row
     metric_col1, metric_col2 = st.columns(2)
     with metric_col1:
         st.markdown(f"""
@@ -91,7 +103,6 @@ with main_tab1:
     st.markdown("---")
     st.markdown("### 📈 Recovery Scenarios")
     
-    # Subtabs for Scenarios
     scen_tab1, scen_tab2, scen_tab3 = st.tabs(["Conservative (Email)", "Base (Omnichannel)", "Optimistic (AI+SMS)"])
     
     with scen_tab1:
@@ -127,7 +138,6 @@ with main_tab1:
     st.markdown("---")
     st.markdown("### 🛠️ Recommended Tools for Your Store")
     
-    # Tool 1
     st.markdown("#### **Omnisend** — 🏆 *Best Value Choice*")
     st.markdown("**Pricing Tier:** Standard (€16/mo)")
     st.markdown("**Why it fits:** Email + SMS automation with high ROI for small e-commerce stores.")
@@ -135,7 +145,6 @@ with main_tab1:
 
     st.markdown("---")
     
-    # Tool 2
     st.markdown("#### **Retainful** — 💡 *Budget Alternative*")
     st.markdown("**Pricing Tier:** Free / Starter")
     st.markdown("**Why it fits:** Great dynamic coupons and abandoned cart recovery for early stages.")
@@ -159,7 +168,7 @@ with main_tab2:
 
 st.divider()
 
-# --- HIDDEN ADMIN PANEL (Accessible only via secret URL parameter ?portal=secret_admin) ---
+# --- HIDDEN ADMIN PANEL ---
 query_params = st.query_params
 if query_params.get("portal") == "secret_admin":
     with st.sidebar:
@@ -189,7 +198,7 @@ if query_params.get("portal") == "secret_admin":
         else:
             st.warning("Enter admin password.")
 
-# --- FOOTER (IMPRESSUM & DSGV / PRIVACY POLICY ACCORDIONS) ---
+# --- FOOTER ---
 st.markdown("---")
 
 col_imp, col_dsg = st.columns(2)
