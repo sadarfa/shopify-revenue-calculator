@@ -39,8 +39,8 @@ if "b_calc_done" not in st.session_state:
 st.title("📈 Shopify Revenue & Recovery Calculator")
 st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
 
-# Navigation Tabs including the new SEO Guides section
-nav_tab1, nav_tab2, nav_tab3, nav_tab4 = st.tabs(["Calculator", "Tool Finder", "Guides & Articles", "Legal & Privacy"])
+# Navigation Tabs (removed Legal & Privacy tab)
+nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Guides & Articles"])
 
 with nav_tab1:
     st.header("Revenue & Recovery Calculator")
@@ -130,14 +130,6 @@ with nav_tab3:
     st.subheader("3. Maximizing Customer Lifetime Value (LTV)")
     st.write("Tactics on retention, post-purchase segmentation, and email marketing to increase repeat purchases.")
 
-with nav_tab4:
-    st.header("Privacy Policy & Legal Notice")
-    st.write("""
-    **Legal Notice (Impressum):**  
-    Igor Widiker | Erkrath, Germany | E-Mail: business.iwi@gmail.com  
-    Data processing complies with GDPR (DSGVO).
-    """)
-
 st.divider()
 
 # --- PROTECTED ADMIN PANEL IN SIDEBAR ---
@@ -172,4 +164,12 @@ if show_admin:
     else:
         st.info("No leads recorded in the database yet.")
 
-st.caption("Legal Notice: Igor Widiker | Erkrath, Germany | business.iwi@gmail.com")
+# --- IMPRESSUM (FOOTER) ---
+st.markdown("---")
+st.markdown("### **Impressum**")
+st.markdown("""
+**Angaben gemäß § 5 TMG:**  
+Igor Widiker  
+Erkrath, Germany  
+**E-Mail:** business.iwi@gmail.com  
+""")
