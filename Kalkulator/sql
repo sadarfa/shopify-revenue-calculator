@@ -1,0 +1,19 @@
+CREATE TABLE calculator_sessions (
+    session_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    monthly_visitors INTEGER,
+    average_order_value REAL,
+    current_orders INTEGER,
+    estimated_lost_revenue REAL,
+    conservative_recovered REAL,
+    base_recovered REAL,
+    optimistic_recovered REAL
+);
+
+CREATE TABLE affiliate_clicks (
+    click_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    session_id INTEGER,
+    tool_name TEXT,
+    clicked_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (session_id) REFERENCES calculator_sessions(session_id)
+);
