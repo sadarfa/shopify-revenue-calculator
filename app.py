@@ -83,9 +83,17 @@ with nav_tab1:
         
         budget_choice = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud_main")
         if "Low Budget" in budget_choice:
-            st.info("🥇 Recommendation: **Retainful / Cartly** — Budget-friendly recovery apps.")
+            st.markdown("""
+            * **🥇 1st Place:** **Retainful** — Great budget-friendly recovery emails & live triggers.
+            * **🥈 2nd Place:** **Cartly** — Simple, lightweight abandoned cart app.
+            * **🥉 3rd Place:** **Shopify Email (Native)** — Cost-effective starter option.
+            """)
         else:
-            st.info("🥇 Recommendation: **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.")
+            st.markdown("""
+            * **🥇 1st Place:** **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.
+            * **🥈 2nd Place:** **Klaviyo** — Advanced data segmentation and flows.
+            * **🥉 3rd Place:** **Recart** — High-converting SMS-first recovery platform.
+            """)
 
     st.divider()
     st.info("💡 **Want to save this report and unlock personalized software recommendations?**")
@@ -110,9 +118,17 @@ with nav_tab2:
     
     budget_choice_tab = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud_tab")
     if "Low Budget" in budget_choice_tab:
-        st.info("🥇 Recommendation: **Retainful / Cartly** — Budget-friendly recovery apps.")
+        st.markdown("""
+        * **🥇 1st Place:** **Retainful** — Great budget-friendly recovery emails & live triggers.
+        * **🥈 2nd Place:** **Cartly** — Simple, lightweight abandoned cart app.
+        * **🥉 3rd Place:** **Shopify Email (Native)** — Cost-effective starter option.
+        """)
     else:
-        st.info("🥇 Recommendation: **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.")
+        st.markdown("""
+        * **🥇 1st Place:** **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.
+        * **🥈 2nd Place:** **Klaviyo** — Advanced data segmentation and flows.
+        * **🥉 3rd Place:** **Recart** — High-converting SMS-first recovery platform.
+        """)
 
 with nav_tab3:
     st.header("E-Commerce Growth & Recovery Guides")
