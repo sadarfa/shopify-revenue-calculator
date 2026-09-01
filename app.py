@@ -84,23 +84,6 @@ if current_variant == "A":
         res_col2.metric("Monthly Recoverable", f"${st.session_state['pot_mon']:,.2f}", delta=f"+{(st.session_state['pot_mon']/max(st.session_state['curr_rev'], 1))*100:.1f}%")
         res_col3.metric("Annual Recoverable", f"${st.session_state['pot_annual']:,.2f}")
 
-        st.info("💡 **Want to save this report and unlock personalized software recommendations?**")
-        saved_email = st.text_input("Enter your email to save report", placeholder="your-email@store.com", key="a_email_save")
-        
-        if st.button("Save & Unlock Report", key="a_save_btn"):
-            if saved_email:
-                conn = sqlite3.connect(DB_FILE)
-                cursor = conn.cursor()
-                cursor.execute(
-                    "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
-                    (store_url, st.session_state['pot_annual'], saved_email, current_variant)
-                )
-                conn.commit()
-                conn.close()
-                st.success("Report saved successfully! Check your inbox soon.")
-            else:
-                st.warning("Please enter a valid email address.")
-
     st.divider()
     st.subheader("🛠️ Find Your Recovery Tool Stack")
     budget_choice = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="a_bud")
@@ -108,6 +91,25 @@ if current_variant == "A":
         st.info("🥇 Recommendation: **Retainful / Cartly** — Budget-friendly recovery apps.")
     else:
         st.info("🥇 Recommendation: **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.")
+
+    # Отдельный блок сохранения отчета в самом низу страницы (перед футером)
+    st.divider()
+    st.info("💡 **Want to save this report and unlock personalized software recommendations?**")
+    saved_email = st.text_input("Enter your email to save report", placeholder="your-email@store.com", key="a_email_save")
+    
+    if st.button("Save & Unlock Report", key="a_save_btn"):
+        if saved_email:
+            conn = sqlite3.connect(DB_FILE)
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
+                (store_url, st.session_state.get('pot_annual', 94500.00), saved_email, current_variant)
+            )
+            conn.commit()
+            conn.close()
+            st.success("Report saved successfully! Check your inbox soon.")
+        else:
+            st.warning("Please enter a valid email address.")
 
 # --- VARIANT B: Multi-tab structured interface ---
 else:
@@ -139,18 +141,23 @@ else:
 
         if st.session_state.get("b_calc_done", True):
             st.metric("Annual Recoverable Revenue", f"${st.session_state.get('b_annual', 94500.00):,.2f}")
-            saved_email_b = st.text_input("Your Email to save report", placeholder="your-email@store.com", key="b_email")
-            if st.button("Save Lead", key="b_save_btn"):
-                if saved_email_b:
-                    conn = sqlite3.connect(DB_FILE)
-                    cursor = conn.cursor()
-                    cursor.execute(
-                        "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
-                        (store_url, st.session_state.get('b_annual', 94500.00), saved_email_b, current_variant)
-                    )
-                    conn.commit()
-                    conn.close()
-                    st.success("Saved successfully!")
+
+        st.divider()
+        st.info("💡 **Want to save this report and unlock personalized software recommendations?**")
+        saved_email_b = st.text_input("Enter your email to save report", placeholder="your-email@store.com", key="b_email")
+        if st.button("Save Lead", key="b_save_btn"):
+            if saved_email_b:
+                conn = sqlite3.connect(DB_FILE)
+                cursor = conn.cursor()
+                cursor.execute(
+                    "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
+                    (store_url, st.session_state.get('b_annual', 94500.00), saved_email_b, current_variant)
+                )
+                conn.commit()
+                conn.close()
+                st.success("Saved successfully!")
+            else:
+                st.warning("Please enter a valid email address.")
 
     with nav_tab2:
         st.header("Tool Finder")
