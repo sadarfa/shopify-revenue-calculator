@@ -101,8 +101,8 @@ with nav_tab1:
         budget_choice = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud_main")
         if "Low Budget" in budget_choice:
             st.markdown("""
-            * **🥇 1st Place:** **Retainful** — Great budget-friendly recovery emails & live triggers.
-            * **🥈 2nd Place:** **Cartly** — Simple, lightweight abandoned cart app.
+            * **🥇 1st Place:** **Omnisend (Standard)** — Starts at $16/mo; excellent multi-channel automation and 20% recurring affiliate setup.
+            * **🥈 2nd Place:** **Retainful** — Great budget-friendly recovery emails & live triggers.
             * **🥉 3rd Place:** **Shopify Email (Native)** — Cost-effective starter option.
             """)
         else:
@@ -136,8 +136,8 @@ with nav_tab2:
     budget_choice_tab = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud_tab")
     if "Low Budget" in budget_choice_tab:
         st.markdown("""
-        * **🥇 1st Place:** **Retainful** — Great budget-friendly recovery emails & live triggers.
-        * **🥈 2nd Place:** **Cartly** — Simple, lightweight abandoned cart app.
+        * **🥇 1st Place:** **Omnisend (Standard)** — Starts at $16/mo; ideal budget automation choice.
+        * **🥈 2nd Place:** **Retainful** — Great budget-friendly recovery emails & live triggers.
         * **🥉 3rd Place:** **Shopify Email (Native)** — Cost-effective starter option.
         """)
     else:
@@ -152,16 +152,49 @@ with nav_tab3:
     st.write("Explore our expert articles designed to help Shopify merchants maximize revenue and optimize customer lifecycle value.")
     
     st.markdown("---")
-    st.subheader("1. Abandoned Cart Recovery Strategies for Shopify")
-    st.write("Learn how to turn lost checkouts into completed orders using multi-channel automated workflows (Email & SMS).")
     
-    st.markdown("---")
-    st.subheader("2. Shopify Native Features vs. Third-Party Recovery Apps")
-    st.write("A deep dive into why built-in platform features often fall short and when it's time to upgrade to advanced tools.")
+    article_choice = st.selectbox("Select a Guide to Read:", [
+        "1. Best Abandoned Cart Recovery for Shopify Under $50/Month (Recommended)",
+        "2. Shopify Native Features vs. Third-Party Recovery Apps",
+        "3. Maximizing Customer Lifetime Value (LTV)"
+    ])
     
-    st.markdown("---")
-    st.subheader("3. Maximizing Customer Lifetime Value (LTV)")
-    st.write("Tactics on retention, post-purchase segmentation, and email marketing to increase repeat purchases.")
+    if "Under $50" in article_choice:
+        st.markdown("## Best Abandoned Cart Recovery for Shopify Under $50/Month (2026 Guide)")
+        st.markdown("*Published by Growth & Recovery Lab | Reading time: 4 mins*")
+        
+        st.markdown("""
+        ### Why Enterprise Tools Aren't Always the Answer
+        Most e-commerce guides recommend heavy tools costing $150–$300+ per month. If your Shopify store is generating €5k–€10k monthly, spending a huge chunk of your margin on software is a direct path to the red. You need lean, predictable automation that pays for itself with just two or three recovered checkouts.
+        
+        ### Top Budget-Friendly Recovery Solutions (<$50/mo)
+        
+        #### 1. Omnisend (Standard Plan — Starting at $16/mo)
+        * **Why it fits:** It's our top recommendation for growing stores. You get automated multi-channel workflows (Email + SMS), pre-built abandoned cart & checkout sequences, and a generous free tier up to 250 contacts.
+        * **Verdict:** Unbeatable feature-to-price ratio if you want room to scale without switching platforms later.
+        
+        #### 2. Retainful (Starting at $9/mo)
+        * **Why it fits:** Perfect if you want pure email-based recovery without paying for advanced enterprise features you won't use. 
+        * **Verdict:** Lightweight, straightforward setup directly inside Shopify.
+        
+        #### 3. Shopify Native Abandoned Checkout (Free)
+        * **Why it fits:** Shopify includes a basic automated email reminder out of the box.
+        * **Verdict:** Good for day one, but lacks advanced segmentation, multi-channel SMS triggers, and custom exit-intent popups needed long-term.
+        
+        ---
+        ### 💡 Ready to find your exact fit?
+        Don't guess your numbers. Use our **Revenue & Recovery Calculator** (Tab 1) to see how much uncaptured revenue you're leaving on the table right now, or check out our automated **Tool Finder** (Tab 2).
+        """)
+        
+    elif "Native Features" in article_choice:
+        st.markdown("## Shopify Native Features vs. Third-Party Recovery Apps")
+        st.write("A deep dive into why built-in platform features often fall short and when it's time to upgrade to advanced tools.")
+        st.markdown("*(Full article text loading... Focus on calculator metrics to evaluate your current setup).*")
+        
+    else:
+        st.markdown("## Maximizing Customer Lifetime Value (LTV)")
+        st.write("Tactics on retention, post-purchase segmentation, and email marketing to increase repeat purchases.")
+        st.markdown("*(Full article text loading... Use the Tool Finder to match your store with top retention apps).*")
 
 st.divider()
 
