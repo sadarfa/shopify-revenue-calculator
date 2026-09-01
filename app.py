@@ -1,6 +1,5 @@
 import streamlit as st
 import sqlite3
-import random
 
 # Database setup with A/B variant tracking
 DB_FILE = "database.db"
@@ -30,80 +29,64 @@ st.set_page_config(
     layout="centered"
 )
 
-# A/B Test Session Assignment (hidden from user)
-if "ab_variant" not in st.session_state:
-    st.session_state["ab_variant"] = random.choice(["A", "B"])
-
-current_variant = st.session_state["ab_variant"]
-
 # Set default calculated state so results are visible instantly as an example
-if "calc_done" not in st.session_state:
-    st.session_state["calc_done"] = True
-    st.session_state["curr_rev"] = 112500.00
-    st.session_state["pot_mon"] = 7875.00
-    st.session_state["pot_annual"] = 94500.00
+if "b_calc_done" not in st.session_state:
+    st.session_state["b_calc_done"] = True
+    st.session_state["b_annual"] = 94500.00
+    st.session_state["b_curr_rev"] = 112500.00
+    st.session_state["b_pot_mon"] = 7875.00
 
-# --- VARIANT A: Single-page high-converting landing (Value First) ---
-if current_variant == "A":
-    st.title("📈 Shopify Revenue & Recovery Calculator")
-    st.write("Calculate your store's hidden losses and see how much revenue you can recover instantly.")
+st.title("📈 Shopify Revenue & Recovery Calculator")
+st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
 
-    st.divider()
+# Force Variant B (Multi-tab structured interface) as the permanent version
+nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Legal & Privacy"])
 
+with nav_tab1:
+    st.header("Revenue & Recovery Calculator")
+    
     col1, col2 = st.columns(2)
     with col1:
-        monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=50000, step=5000, key="a_vis")
-        conversion_rate = st.slider("Current Conversion Rate (%)", min_value=0.5, max_value=5.0, value=1.5, step=0.1, key="a_cr")
+        monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=50000, step=5000, key="b_vis")
+        conversion_rate = st.slider("Current Conversion Rate (%)", min_value=0.5, max_value=5.0, value=1.5, step=0.1, key="b_cr")
     with col2:
-        avg_order_value = st.number_input("Average Order Value ($)", min_value=10.0, value=75.0, step=5.0, key="a_aov")
-        cart_abandonment_rate = st.slider("Cart Abandonment Rate (%)", min_value=50.0, max_value=90.0, value=70.0, step=1.0, key="a_car")
+        avg_order_value = st.number_input("Average Order Value ($)", min_value=10.0, value=75.0, step=5.0, key="b_aov")
+        cart_abandonment_rate = st.slider("Cart Abandonment Rate (%)", min_value=50.0, max_value=90.0, value=70.0, step=1.0, key="b_car")
 
-    store_url = st.text_input("Shopify Store URL (optional)", placeholder="my-store.myshopify.com", key="a_url")
+    store_url = st.text_input("Shopify Store URL (optional)", placeholder="my-store.myshopify.com", key="b_url")
 
-    st.markdown("")
-    if st.button("Calculate Recovery Potential", type="primary", use_container_width=True, key="a_btn"):
+    if st.button("Calculate Recovery Potential", type="primary", use_container_width=True, key="b_btn"):
         monthly_orders = monthly_visitors * (conversion_rate / 100.0)
         current_monthly_revenue = monthly_orders * avg_order_value
-        
         abandoned_carts = monthly_visitors * (cart_abandonment_rate / 100.0)
         recoverable_orders = abandoned_carts * 0.15
         potential_monthly_gain = recoverable_orders * avg_order_value
         potential_annual_gain = potential_monthly_gain * 12
+        
+        st.session_state["b_annual"] = potential_annual_gain
+        st.session_state["b_curr_rev"] = current_monthly_revenue
+        st.session_state["b_pot_mon"] = potential_monthly_gain
+        st.session_state["b_calc_done"] = True
 
-        st.session_state["calc_done"] = True
-        st.session_state["pot_annual"] = potential_annual_gain
-        st.session_state["curr_rev"] = current_monthly_revenue
-        st.session_state["pot_mon"] = potential_monthly_gain
-
-    if st.session_state.get("calc_done", False):
+    if st.session_state.get("b_calc_done", False):
         st.divider()
         st.markdown("### 📊 Your Revenue Recovery Results")
         
         res_col1, res_col2, res_col3 = st.columns(3)
-        res_col1.metric("Current Monthly Rev", f"${st.session_state['curr_rev']:,.2f}")
-        res_col2.metric("Monthly Recoverable", f"${st.session_state['pot_mon']:,.2f}", delta=f"+{(st.session_state['pot_mon']/max(st.session_state['curr_rev'], 1))*100:.1f}%")
-        res_col3.metric("Annual Recoverable", f"${st.session_state['pot_annual']:,.2f}")
+        res_col1.metric("Current Monthly Rev", f"${st.session_state['b_curr_rev']:,.2f}")
+        res_col2.metric("Monthly Recoverable", f"${st.session_state['b_pot_mon']:,.2f}", delta=f"+{(st.session_state['b_pot_mon']/max(st.session_state['b_curr_rev'], 1))*100:.1f}%")
+        res_col3.metric("Annual Recoverable", f"${st.session_state['b_annual']:,.2f}")
 
-    st.divider()
-    st.subheader("🛠️ Find Your Recovery Tool Stack")
-    budget_choice = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="a_bud")
-    if "Low Budget" in budget_choice:
-        st.info("🥇 Recommendation: **Retainful / Cartly** — Budget-friendly recovery apps.")
-    else:
-        st.info("🥇 Recommendation: **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.")
-
-    # Отдельный блок сохранения отчета в самом низу страницы (перед футером)
     st.divider()
     st.info("💡 **Want to save this report and unlock personalized software recommendations?**")
-    saved_email = st.text_input("Enter your email to save report", placeholder="your-email@store.com", key="a_email_save")
-    
-    if st.button("Save & Unlock Report", key="a_save_btn"):
-        if saved_email:
+    saved_email_b = st.text_input("Enter your email to save report", placeholder="your-email@store.com", key="b_email")
+    if st.button("Save & Unlock Report", key="b_save_btn"):
+        if saved_email_b:
             conn = sqlite3.connect(DB_FILE)
             cursor = conn.cursor()
             cursor.execute(
                 "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
-                (store_url, st.session_state.get('pot_annual', 94500.00), saved_email, current_variant)
+                (store_url, st.session_state.get('b_annual', 94500.00), saved_email_b, "B")
             )
             conn.commit()
             conn.close()
@@ -111,66 +94,23 @@ if current_variant == "A":
         else:
             st.warning("Please enter a valid email address.")
 
-# --- VARIANT B: Multi-tab structured interface ---
-else:
-    st.title("📈 Shopify Revenue & Recovery Calculator")
-    st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
+with nav_tab2:
+    st.header("Tool Finder")
+    st.write("Find your ideal software stack based on your store profile.")
+    
+    budget_choice = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud")
+    if "Low Budget" in budget_choice:
+        st.info("🥇 Recommendation: **Retainful / Cartly** — Budget-friendly recovery apps.")
+    else:
+        st.info("🥇 Recommendation: **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.")
 
-    nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Legal & Privacy"])
-
-    with nav_tab1:
-        st.header("Revenue & Recovery Calculator")
-        col1, col2 = st.columns(2)
-        with col1:
-            monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=50000, step=5000, key="b_vis")
-            conversion_rate = st.slider("Current Conversion Rate (%)", min_value=0.5, max_value=5.0, value=1.5, step=0.1, key="b_cr")
-        with col2:
-            avg_order_value = st.number_input("Average Order Value ($)", min_value=10.0, value=75.0, step=5.0, key="b_aov")
-            cart_abandonment_rate = st.slider("Cart Abandonment Rate (%)", min_value=50.0, max_value=90.0, value=70.0, step=1.0, key="b_car")
-
-        store_url = st.text_input("Shopify Store URL", placeholder="my-store.myshopify.com", key="b_url")
-
-        if st.button("Calculate Revenue", type="primary", key="b_btn"):
-            monthly_orders = monthly_visitors * (conversion_rate / 100.0)
-            current_monthly_revenue = monthly_orders * avg_order_value
-            abandoned_carts = monthly_visitors * (cart_abandonment_rate / 100.0)
-            potential_annual_gain = abandoned_carts * 0.15 * avg_order_value * 12
-            
-            st.session_state["b_annual"] = potential_annual_gain
-            st.session_state["b_calc_done"] = True
-
-        if st.session_state.get("b_calc_done", True):
-            st.metric("Annual Recoverable Revenue", f"${st.session_state.get('b_annual', 94500.00):,.2f}")
-
-        st.divider()
-        st.info("💡 **Want to save this report and unlock personalized software recommendations?**")
-        saved_email_b = st.text_input("Enter your email to save report", placeholder="your-email@store.com", key="b_email")
-        if st.button("Save Lead", key="b_save_btn"):
-            if saved_email_b:
-                conn = sqlite3.connect(DB_FILE)
-                cursor = conn.cursor()
-                cursor.execute(
-                    "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
-                    (store_url, st.session_state.get('b_annual', 94500.00), saved_email_b, current_variant)
-                )
-                conn.commit()
-                conn.close()
-                st.success("Saved successfully!")
-            else:
-                st.warning("Please enter a valid email address.")
-
-    with nav_tab2:
-        st.header("Tool Finder")
-        st.write("Find your ideal software stack based on your store profile.")
-        st.info("🥇 Top Recommendation: **Omnisend** for multi-channel Shopify recovery.")
-
-    with nav_tab3:
-        st.header("Privacy Policy & Legal Notice")
-        st.write("""
-        **Legal Notice (Impressum):**  
-        Igor Widiker | Erkrath, Germany | E-Mail: business.iwi@gmail.com  
-        Data processing complies with GDPR (DSGVO).
-        """)
+with nav_tab3:
+    st.header("Privacy Policy & Legal Notice")
+    st.write("""
+    **Legal Notice (Impressum):**  
+    Igor Widiker | Erkrath, Germany | E-Mail: business.iwi@gmail.com  
+    Data processing complies with GDPR (DSGVO).
+    """)
 
 st.divider()
 
@@ -187,22 +127,17 @@ with st.sidebar:
 
 if show_admin:
     st.markdown("---")
-    st.subheader("🔐 Admin & A/B Test Analytics Dashboard")
+    st.subheader("🔐 Admin Analytics Dashboard")
     
     conn = sqlite3.connect(DB_FILE)
     cursor = conn.cursor()
     
-    cursor.execute("SELECT variant, COUNT(*), SUM(estimated_revenue) FROM leads GROUP BY variant")
-    stats = cursor.fetchall()
+    cursor.execute("SELECT COUNT(*), SUM(estimated_revenue) FROM leads")
+    total_leads, total_rev = cursor.fetchone()
+    total_rev_display = total_rev if total_rev else 0.0
+    st.write(f"- **Total Leads:** {total_leads} | Total Est. Potential: ${total_rev_display:,.2f}")
     
-    if stats:
-        st.markdown("### Variant Performance Summary")
-        for row in stats:
-            variant_name, lead_count, total_rev = row
-            rev_display = total_rev if total_rev else 0.0
-            st.write(f"- **Variant {variant_name}:** {lead_count} leads | Total Est. Potential: ${rev_display:,.2f}")
-    
-    cursor.execute("SELECT id, store_url, estimated_revenue, email, variant, created_at FROM leads")
+    cursor.execute("SELECT id, store_url, estimated_revenue, email, created_at FROM leads")
     rows = cursor.fetchall()
     conn.close()
     
