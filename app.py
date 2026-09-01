@@ -31,7 +31,6 @@ st.set_page_config(
 )
 
 # --- GOOGLE ANALYTICS (GA4) INTEGRATION ---
-# Замените 'G-XXXXXXXXXX' на ваш реальный Measurement ID
 GA_ID = "G-XXXXXXXXXX"
 
 ga_code = f"""
@@ -166,37 +165,34 @@ with nav_tab3:
 
 st.divider()
 
-# --- PROTECTED ADMIN PANEL IN SIDEBAR ---
-with st.sidebar:
-    st.subheader("Admin Portal")
-    admin_password = st.text_input("Admin Password", type="password")
-    
-    if admin_password == "admin123":
-        st.success("Access Granted")
-        show_admin = True
-    else:
-        show_admin = False
-
-if show_admin:
-    st.markdown("---")
-    st.subheader("🔐 Admin Analytics Dashboard")
-    
-    conn = sqlite3.connect(DB_FILE)
-    cursor = conn.cursor()
-    
-    cursor.execute("SELECT COUNT(*), SUM(estimated_revenue) FROM leads")
-    total_leads, total_rev = cursor.fetchone()
-    total_rev_display = total_rev if total_rev else 0.0
-    st.write(f"- **Total Leads:** {total_leads} | Total Est. Potential: ${total_rev_display:,.2f}")
-    
-    cursor.execute("SELECT id, store_url, estimated_revenue, email, created_at FROM leads")
-    rows = cursor.fetchall()
-    conn.close()
-    
-    if rows:
-        st.table(rows)
-    else:
-        st.info("No leads recorded in the database yet.")
+# --- HIDDEN ADMIN PANEL (Accessible only via secret URL parameter ?portal=secret_admin) ---
+query_params = st.query_params
+if query_params.get("portal") == "secret_admin":
+    with st.sidebar:
+        st.subheader("🔐 Admin Analytics Dashboard")
+        admin_password = st.text_input("Admin Password", type="password")
+        
+        if admin_password == "admin123":
+            st.success("Access Granted")
+            conn = sqlite3.connect(DB_FILE)
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT COUNT(*), SUM(estimated_revenue) FROM leads")
+            total_leads, total_rev = cursor.fetchone()
+            total_rev_display = total_rev if total_rev else 0.0
+            st.write(f"- **Total Leads:** {total_leads}")
+            st.write(f"- **Est. Potential:** ${total_rev_display:,.2f}")
+            
+            cursor.execute("SELECT id, store_url, estimated_revenue, email, created_at FROM leads")
+            rows = cursor.fetchall()
+            conn.close()
+            
+            if rows:
+                st.table(rows)
+            else:
+                st.info("No leads recorded yet.")
+        else:
+            st.warning("Enter admin password.")
 
 # --- FOOTER (IMPRESSUM & DSGV / PRIVACY POLICY ACCORDIONS) ---
 st.markdown("---")
