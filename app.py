@@ -34,6 +34,7 @@ st.set_page_config(
 GA_ID = "G-XXXXXXXXXX"
 
 ga_code = f"""
+<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id={GA_ID}"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -140,4 +141,70 @@ with main_tab2:
     
     st.markdown("---")
     st.subheader("1. Abandoned Cart Recovery Strategies for Shopify")
-    st.write("Learn how to
+    st.write("Learn how to turn lost checkouts into completed orders using multi-channel automated workflows (Email & SMS).")
+    
+    st.markdown("---")
+    st.subheader("2. Shopify Native Features vs. Third-Party Recovery Apps")
+    st.write("A deep dive into why built-in platform features often fall short and when it's time to upgrade to advanced tools.")
+    
+    st.markdown("---")
+    st.subheader("3. Maximizing Customer Lifetime Value (LTV)")
+    st.write("Tactics on retention, post-purchase segmentation, and email marketing to increase repeat purchases.")
+
+st.divider()
+
+# --- HIDDEN ADMIN PANEL ---
+query_params = st.query_params
+if query_params.get("portal") == "secret_admin":
+    with st.sidebar:
+        st.markdown("---")
+        st.subheader("🔐 Admin Analytics Dashboard")
+        admin_password = st.text_input("Admin Password", type="password")
+        
+        if admin_password == "admin123":
+            st.success("Access Granted")
+            conn = sqlite3.connect(DB_FILE)
+            cursor = conn.cursor()
+            
+            cursor.execute("SELECT COUNT(*), SUM(estimated_revenue) FROM leads")
+            total_leads, total_rev = cursor.fetchone()
+            total_rev_display = total_rev if total_rev else 0.0
+            st.write(f"- **Total Leads:** {total_leads}")
+            st.write(f"- **Est. Potential:** ${total_rev_display:,.2f}")
+            
+            cursor.execute("SELECT id, store_url, estimated_revenue, email, created_at FROM leads")
+            rows = cursor.fetchall()
+            conn.close()
+            
+            if rows:
+                st.table(rows)
+            else:
+                st.info("No leads recorded yet.")
+        else:
+            st.warning("Enter admin password.")
+
+# --- FOOTER ---
+st.markdown("---")
+
+col_imp, col_dsg = st.columns(2)
+
+with col_imp:
+    with st.expander("Impressum"):
+        st.markdown("""
+        <div style="font-size: 0.85em; color: #555;">
+        Information according to § 5 TMG:<br>
+        Igor Widiker<br>
+        Erkrath, Germany<br>
+        <b>E-Mail:</b> business.iwi@gmail.com<br><br>
+        © 2026 CompareArena.com - All Rights Reserved by CompareArena
+        </div>
+        """, unsafe_allow_html=True)
+
+with col_dsg:
+    with st.expander("Data Protection (DSGVO)"):
+        st.markdown("""
+        <div style="font-size: 0.85em; color: #555;">
+        <b>Data Privacy Policy:</b><br>
+        We process user data strictly in accordance with the GDPR (DSGVO). Collected lead information is used solely for reporting and communication purposes. No third-party sharing without consent.
+        </div>
+        """, unsafe_allow_html=True)
