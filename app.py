@@ -39,6 +39,7 @@ if "b_calc_done" not in st.session_state:
 st.title("📈 Shopify Revenue & Recovery Calculator")
 st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
 
+# Navigation Tabs
 nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Guides & Articles"])
 
 with nav_tab1:
@@ -163,14 +164,31 @@ if show_admin:
     else:
         st.info("No leads recorded in the database yet.")
 
-# --- IMPRESSUM (COLLAPSIBLE / SMALL FONT) ---
+# --- FOOTER WITH EXPANDERS FOR IMPRESSUM & DSGVO ---
 st.markdown("---")
-with st.expander("Impressum"):
-    st.markdown("""
-    <div style="font-size: 12px; color: gray;">
-    Angaben gemäß § 5 TMG:<br>
-    Igor Widiker<br>
-    Erkrath, Germany<br>
-    E-Mail: business.iwi@gmail.com
-    </div>
-    """, unsafe_allow_html=True)
+
+footer_col1, footer_col2 = st.columns(2)
+
+with footer_col1:
+    with st.expander("Impressum"):
+        st.markdown("""
+        <div style="font-size: 0.8rem; color: gray;">
+        Angaben gemäß § 5 TMG:<br>
+        Igor Widiker<br>
+        Erkrath, Germany<br>
+        <b>E-Mail:</b> business.iwi@gmail.com
+        </div>
+        """, unsafe_allow_html=True)
+
+with footer_col2:
+    with st.expander("DSGVO (Privacy Policy)"):
+        st.markdown("""
+        <div style="font-size: 0.8rem; color: gray;">
+        <b>Datenschutzerklärung:</b><br>
+        Die Nutzung unserer Website ist in der Regel ohne Angabe personenbezogener Daten möglich. 
+        Soweit personenbezogene Daten (z. B. E-Mail-Adresse) erhoben werden, erfolgt dies auf freiwilliger Basis.<br>
+        Verantwortlich im Sinne der DSGVO:<br>
+        Igor Widiker, Erkrath, Germany.<br>
+        E-Mail: business.iwi@gmail.com
+        </div>
+        """, unsafe_allow_html=True)
