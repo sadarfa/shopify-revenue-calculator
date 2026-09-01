@@ -164,31 +164,27 @@ if show_admin:
     else:
         st.info("No leads recorded in the database yet.")
 
-# --- FOOTER WITH EXPANDERS FOR IMPRESSUM & DSGVO ---
+# --- FOOTER (IMPRESSUM & DSGV / PRIVACY POLICY ACCORDIONS) ---
 st.markdown("---")
 
-footer_col1, footer_col2 = st.columns(2)
+col_imp, col_dsg = st.columns(2)
 
-with footer_col1:
+with col_imp:
     with st.expander("Impressum"):
         st.markdown("""
-        <div style="font-size: 0.8rem; color: gray;">
-        Angaben gemäß § 5 TMG:<br>
+        <div style="font-size: 0.85em; color: #555;">
+        Information according to § 5 TMG:<br>
         Igor Widiker<br>
         Erkrath, Germany<br>
         <b>E-Mail:</b> business.iwi@gmail.com
         </div>
         """, unsafe_allow_html=True)
 
-with footer_col2:
-    with st.expander("DSGVO (Privacy Policy)"):
+with col_dsg:
+    with st.expander("Data Protection (DSGVO)"):
         st.markdown("""
-        <div style="font-size: 0.8rem; color: gray;">
-        <b>Datenschutzerklärung:</b><br>
-        Die Nutzung unserer Website ist in der Regel ohne Angabe personenbezogener Daten möglich. 
-        Soweit personenbezogene Daten (z. B. E-Mail-Adresse) erhoben werden, erfolgt dies auf freiwilliger Basis.<br>
-        Verantwortlich im Sinne der DSGVO:<br>
-        Igor Widiker, Erkrath, Germany.<br>
-        E-Mail: business.iwi@gmail.com
+        <div style="font-size: 0.85em; color: #555;">
+        <b>Data Privacy Policy:</b><br>
+        We process user data strictly in accordance with the GDPR (DSGVO). Collected lead information is used solely for reporting and communication purposes. No third-party sharing without consent.
         </div>
         """, unsafe_allow_html=True)
