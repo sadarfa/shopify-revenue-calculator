@@ -25,9 +25,9 @@ init_db()
 
 # Page configuration
 st.set_page_config(
-    page_title="Shopify Revenue & Recovery Calculator",
+    page_title="Shopify Revenue Recovery Calculator & Tool Finder",
     page_icon="📈",
-    layout="centered"
+    layout="wide"
 )
 
 # --- GOOGLE ANALYTICS (GA4) INTEGRATION ---
@@ -46,155 +46,116 @@ ga_code = f"""
 """
 components.html(ga_code, height=0, width=0)
 
-# Set default calculated state so results are visible instantly as an example
-if "b_calc_done" not in st.session_state:
-    st.session_state["b_calc_done"] = True
-    st.session_state["b_annual"] = 94500.00
-    st.session_state["b_curr_rev"] = 112500.00
-    st.session_state["b_pot_mon"] = 7875.00
-
-st.title("📈 Shopify Revenue & Recovery Calculator")
-st.write("Professional multi-tool suite for e-commerce growth and tool selection.")
-
-# Navigation Tabs
-nav_tab1, nav_tab2, nav_tab3 = st.tabs(["Calculator", "Tool Finder", "Guides & Articles"])
-
-with nav_tab1:
-    st.header("Revenue & Recovery Calculator")
+# --- SIDEBAR INPUTS (Store Parameters & Budget) ---
+with st.sidebar:
+    st.markdown("### ⚙️ Store Parameters")
+    monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=5000, step=1000, key="b_vis")
+    current_monthly_orders = st.number_input("Current Monthly Orders", min_value=10, value=140, step=10, key="b_orders")
+    avg_order_value = st.number_input("Average Order Value (AOV, €)", min_value=10.0, value=70.0, step=5.0, key="b_aov")
     
-    col1, col2 = st.columns(2)
-    with col1:
-        monthly_visitors = st.number_input("Monthly Visitors", min_value=1000, value=50000, step=5000, key="b_vis")
-        conversion_rate = st.slider("Current Conversion Rate (%)", min_value=0.5, max_value=5.0, value=1.5, step=0.1, key="b_cr")
-    with col2:
-        avg_order_value = st.number_input("Average Order Value ($)", min_value=10.0, value=75.0, step=5.0, key="b_aov")
-        cart_abandonment_rate = st.slider("Cart Abandonment Rate (%)", min_value=50.0, max_value=90.0, value=70.0, step=1.0, key="b_car")
+    st.markdown("---")
+    st.markdown("### 🎯 Budget & Requirements")
+    monthly_budget = st.slider("Monthly Marketing Budget (€)", min_value=0, max_value=500, value=30, step=10, key="b_budget")
+    ai_support = st.checkbox("Do you need AI customer support & live chat?", value=False, key="b_ai")
 
-    store_url = st.text_input("Shopify Store URL (optional)", placeholder="my-store.myshopify.com", key="b_url")
+# --- CALCULATIONS ---
+# Derive conversion rate based on orders / visitors
+conversion_rate = (current_monthly_orders / monthly_visitors) * 100 if monthly_visitors > 0 else 1.5
+current_monthly_rev = current_monthly_orders * avg_order_value
 
-    if st.button("Calculate Recovery Potential", type="primary", use_container_width=True, key="b_btn"):
-        monthly_orders = monthly_visitors * (conversion_rate / 100.0)
-        current_monthly_revenue = monthly_orders * avg_order_value
-        abandoned_carts = monthly_visitors * (cart_abandonment_rate / 100.0)
-        recoverable_orders = abandoned_carts * 0.15
-        potential_monthly_gain = recoverable_orders * avg_order_value
-        potential_annual_gain = potential_monthly_gain * 12
-        
-        st.session_state["b_annual"] = potential_annual_gain
-        st.session_state["b_curr_rev"] = current_monthly_revenue
-        st.session_state["b_pot_mon"] = potential_monthly_gain
-        st.session_state["b_calc_done"] = True
+# Abandoned cart estimation (~70% cart abandonment rate assumed)
+estimated_abandoned_carts = monthly_visitors * 0.70
+estimated_lost_revenue = estimated_abandoned_carts * avg_order_value * 0.15 # ~15% recoverable potential
 
-    if st.session_state.get("b_calc_done", False):
-        st.divider()
-        st.markdown("### 📊 Your Revenue Recovery Results")
-        
-        res_col1, res_col2, res_col3 = st.columns(3)
-        res_col1.metric("Current Monthly Rev", f"${st.session_state['b_curr_rev']:,.2f}")
-        res_col2.metric("Monthly Recoverable", f"${st.session_state['b_pot_mon']:,.2f}", delta=f"+{(st.session_state['b_pot_mon']/max(st.session_state['b_curr_rev'], 1))*100:.1f}%")
-        res_col3.metric("Annual Recoverable", f"${st.session_state['b_annual']:,.2f}")
+# --- MAIN CONTENT TABS ---
+main_tab1, main_tab2 = st.tabs(["📊 Revenue Recovery Calculator & Tool Finder", "📝 SEO Article Preview"])
 
-        st.divider()
-        st.subheader("🛠️ Find Your Recovery Tool Stack")
-        st.write("Find your ideal software stack based on your store profile.")
-        
-        budget_choice = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud_main")
-        if "Low Budget" in budget_choice:
-            st.markdown("""
-            * **🥇 1st Place:** **Omnisend (Standard)** — Starts at $16/mo; excellent multi-channel automation and 20% recurring affiliate setup.
-            * **🥈 2nd Place:** **Retainful** — Great budget-friendly recovery emails & live triggers.
-            * **🥉 3rd Place:** **Shopify Email (Native)** — Cost-effective starter option.
-            """)
-        else:
-            st.markdown("""
-            * **🥇 1st Place:** **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.
-            * **🥈 2nd Place:** **Klaviyo** — Advanced data segmentation and flows.
-            * **🥉 3rd Place:** **Recart** — High-converting SMS-first recovery platform.
-            """)
-
-    st.divider()
-    st.info("💡 **Want to save this report and unlock personalized software recommendations?**")
-    saved_email_b = st.text_input("Enter your email to save report", placeholder="your-email@store.com", key="b_email")
-    if st.button("Save & Unlock Report", key="b_save_btn"):
-        if saved_email_b:
-            conn = sqlite3.connect(DB_FILE)
-            cursor = conn.cursor()
-            cursor.execute(
-                "INSERT INTO leads (store_url, estimated_revenue, email, variant) VALUES (?, ?, ?, ?)",
-                (store_url, st.session_state.get('b_annual', 94500.00), saved_email_b, "B")
-            )
-            conn.commit()
-            conn.close()
-            st.success("Report saved successfully! Check your inbox soon.")
-        else:
-            st.warning("Please enter a valid email address.")
-
-with nav_tab2:
-    st.header("Tool Finder")
-    st.write("Find your ideal software stack based on your store profile.")
+with main_tab1:
+    st.markdown("## 🛒 Shopify Revenue Recovery Calculator & Tool Finder")
+    st.write("Estimate your store's lost monthly revenue and discover the ideal automation stack in seconds.")
     
-    budget_choice_tab = st.selectbox("Monthly software budget?", ["Low Budget (<$50)", "Growth ($50-$200)", "Scale ($200+)"], key="b_bud_tab")
-    if "Low Budget" in budget_choice_tab:
-        st.markdown("""
-        * **🥇 1st Place:** **Omnisend (Standard)** — Starts at $16/mo; ideal budget automation choice.
-        * **🥈 2nd Place:** **Retainful** — Great budget-friendly recovery emails & live triggers.
-        * **🥉 3rd Place:** **Shopify Email (Native)** — Cost-effective starter option.
-        """)
-    else:
-        st.markdown("""
-        * **🥇 1st Place:** **Omnisend** (Top Partner Pick) — Ultimate email & SMS automation powerhouse.
-        * **🥈 2nd Place:** **Klaviyo** — Advanced data segmentation and flows.
-        * **🥉 3rd Place:** **Recart** — High-converting SMS-first recovery platform.
-        """)
+    # Top Metrics Row
+    metric_col1, metric_col2 = st.columns(2)
+    with metric_col1:
+        st.markdown(f"""
+        <div style="font-size: 0.9em; color: gray;">📉 Estimated Lost Revenue / mo</div>
+        <div style="font-size: 2.2em; font-weight: bold; color: #222;">€{estimated_lost_revenue:,.2f}</div>
+        <span style="background-color: #ffebee; color: #c62828; padding: 2px 6px; border-radius: 4px; font-size: 0.8em;">↑ Growth Potential</span>
+        """, unsafe_allow_html=True)
+    with metric_col2:
+        st.markdown(f"""
+        <div style="font-size: 0.9em; color: gray;">📊 Current Conversion Rate</div>
+        <div style="font-size: 2.2em; font-weight: bold; color: #222;">{conversion_rate:.2f}%</div>
+        """, unsafe_allow_html=True)
+        
+    st.markdown("---")
+    st.markdown("### 📈 Recovery Scenarios")
+    
+    # Subtabs for Scenarios
+    scen_tab1, scen_tab2, scen_tab3 = st.tabs(["Conservative (Email)", "Base (Omnichannel)", "Optimistic (AI+SMS)"])
+    
+    with scen_tab1:
+        rev_val = estimated_lost_revenue * 0.25
+        orders_val = rev_val / avg_order_value if avg_order_value > 0 else 0
+        st.markdown(f"""
+        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 5px solid #4caf50;">
+        <b>Recovered Revenue:</b> €{rev_val:,.2f} / month ({orders_val:.1f} orders)
+        </div>
+        """, unsafe_allow_html=True)
+        st.write("**Strategy:** Basic email automation (e.g., standard Shopify email)")
 
-with nav_tab3:
+    with scen_tab2:
+        rev_val = estimated_lost_revenue * 0.60
+        orders_val = rev_val / avg_order_value if avg_order_value > 0 else 0
+        st.markdown(f"""
+        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 5px solid #4caf50;">
+        <b>Recovered Revenue:</b> €{rev_val:,.2f} / month ({orders_val:.1f} orders)
+        </div>
+        """, unsafe_allow_html=True)
+        st.write("**Strategy:** Multi-channel workflows (Email + SMS sequences)")
+
+    with scen_tab3:
+        rev_val = estimated_lost_revenue * 0.85
+        orders_val = rev_val / avg_order_value if avg_order_value > 0 else 0
+        st.markdown(f"""
+        <div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; border-left: 5px solid #4caf50;">
+        <b>Recovered Revenue:</b> €{rev_val:,.2f} / month ({orders_val:.1f} orders)
+        </div>
+        """, unsafe_allow_html=True)
+        st.write("**Strategy:** Full AI automation stack with live chat and predictive triggers")
+
+    st.markdown("---")
+    st.markdown("### 🛠️ Recommended Tools for Your Store")
+    
+    # Tool 1
+    st.markdown("#### **Omnisend** — 🏆 *Best Value Choice*")
+    st.markdown("**Pricing Tier:** Standard (€16/mo)")
+    st.markdown("**Why it fits:** Email + SMS automation with high ROI for small e-commerce stores.")
+    st.button("Launch Recovery with Omnisend", key="btn_omni")
+
+    st.markdown("---")
+    
+    # Tool 2
+    st.markdown("#### **Retainful** — 💡 *Budget Alternative*")
+    st.markdown("**Pricing Tier:** Free / Starter")
+    st.markdown("**Why it fits:** Great dynamic coupons and abandoned cart recovery for early stages.")
+    st.button("Launch Recovery with Retainful", key="btn_ret")
+
+with main_tab2:
     st.header("E-Commerce Growth & Recovery Guides")
     st.write("Explore our expert articles designed to help Shopify merchants maximize revenue and optimize customer lifecycle value.")
     
     st.markdown("---")
+    st.subheader("1. Abandoned Cart Recovery Strategies for Shopify")
+    st.write("Learn how to turn lost checkouts into completed orders using multi-channel automated workflows (Email & SMS).")
     
-    article_choice = st.selectbox("Select a Guide to Read:", [
-        "1. Best Abandoned Cart Recovery for Shopify Under $50/Month (Recommended)",
-        "2. Shopify Native Features vs. Third-Party Recovery Apps",
-        "3. Maximizing Customer Lifetime Value (LTV)"
-    ])
+    st.markdown("---")
+    st.subheader("2. Shopify Native Features vs. Third-Party Recovery Apps")
+    st.write("A deep dive into why built-in platform features often fall short and when it's time to upgrade to advanced tools.")
     
-    if "Under $50" in article_choice:
-        st.markdown("## Best Abandoned Cart Recovery for Shopify Under $50/Month (2026 Guide)")
-        st.markdown("*Published by Growth & Recovery Lab | Reading time: 4 mins*")
-        
-        st.markdown("""
-        ### Why Enterprise Tools Aren't Always the Answer
-        Most e-commerce guides recommend heavy tools costing $150–$300+ per month. If your Shopify store is generating €5k–€10k monthly, spending a huge chunk of your margin on software is a direct path to the red. You need lean, predictable automation that pays for itself with just two or three recovered checkouts.
-        
-        ### Top Budget-Friendly Recovery Solutions (<$50/mo)
-        
-        #### 1. Omnisend (Standard Plan — Starting at $16/mo)
-        * **Why it fits:** It's our top recommendation for growing stores. You get automated multi-channel workflows (Email + SMS), pre-built abandoned cart & checkout sequences, and a generous free tier up to 250 contacts.
-        * **Verdict:** Unbeatable feature-to-price ratio if you want room to scale without switching platforms later.
-        
-        #### 2. Retainful (Starting at $9/mo)
-        * **Why it fits:** Perfect if you want pure email-based recovery without paying for advanced enterprise features you won't use. 
-        * **Verdict:** Lightweight, straightforward setup directly inside Shopify.
-        
-        #### 3. Shopify Native Abandoned Checkout (Free)
-        * **Why it fits:** Shopify includes a basic automated email reminder out of the box.
-        * **Verdict:** Good for day one, but lacks advanced segmentation, multi-channel SMS triggers, and custom exit-intent popups needed long-term.
-        
-        ---
-        ### 💡 Ready to find your exact fit?
-        Don't guess your numbers. Use our **Revenue & Recovery Calculator** (Tab 1) to see how much uncaptured revenue you're leaving on the table right now, or check out our automated **Tool Finder** (Tab 2).
-        """)
-        
-    elif "Native Features" in article_choice:
-        st.markdown("## Shopify Native Features vs. Third-Party Recovery Apps")
-        st.write("A deep dive into why built-in platform features often fall short and when it's time to upgrade to advanced tools.")
-        st.markdown("*(Full article text loading... Focus on calculator metrics to evaluate your current setup).*")
-        
-    else:
-        st.markdown("## Maximizing Customer Lifetime Value (LTV)")
-        st.write("Tactics on retention, post-purchase segmentation, and email marketing to increase repeat purchases.")
-        st.markdown("*(Full article text loading... Use the Tool Finder to match your store with top retention apps).*")
+    st.markdown("---")
+    st.subheader("3. Maximizing Customer Lifetime Value (LTV)")
+    st.write("Tactics on retention, post-purchase segmentation, and email marketing to increase repeat purchases.")
 
 st.divider()
 
@@ -202,6 +163,7 @@ st.divider()
 query_params = st.query_params
 if query_params.get("portal") == "secret_admin":
     with st.sidebar:
+        st.markdown("---")
         st.subheader("🔐 Admin Analytics Dashboard")
         admin_password = st.text_input("Admin Password", type="password")
         
