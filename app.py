@@ -33,26 +33,34 @@ with nav_tab3:
     st.markdown("*Published by Growth & Recovery Lab | Reading time: 4 mins*")
 
     st.markdown("""
-        ### Why Enterprise Tools Aren't Always the Answer
-        Most e-commerce guides recommend heavy tools costing $150–$300+ per month. If your Shopify store is generating €5k–€10k monthly, spending a huge chunk of your margin on software is a direct path to the red. You need lean, predictable automation that pays for itself with just two or three recovered checkouts.
+        ### Введение
+        Большинство SEO-гайдов советуют инструменты за $150–$300 в месяц. Если небольшой Shopify-магазин делает €5k–€10k оборота, отдавать такие деньги за автоматизацию корзин — прямой путь в минус. Разбираем платформы, которые реально укладываются в бюджет до $50/мес и окупаются с первых же двух-трех возвращенных заказов.
+
+        ### Ловушка Enterprise-платформ для малого бизнеса
+        Коротко объясняем, почему раскрученные экосистемы навязывают скрытые переплаты за профили и тяжелую аналитику, которая нужна только брендам с оборотом от €100k. Задаем критерии отбора: предсказуемая фиксированная цена, готовые шаблоны под Shopify и быстрый старт без разработчиков.  
+
+        ### Топ доступных решений до $50/месяц  
         
-        ### Top Budget-Friendly Recovery Solutions (<$50/mo)
+        #### 1. Omnisend (Standard Plan) — старт от $16/мес
+        * **Почему подходит:** Идеальный баланс: полноценные автоматические цепочки брошенных корзин (Abandoned Cart & Checkout), встроенный мультиканальный функционал (Email + SMS) и щедрый бесплатный тариф на старте. *(Здесь вшита наша партнёрская ссылка с 20% рекуррентной комиссией).*
         
-        #### 1. Omnisend (Standard Plan — Starting at $16/mo)
-        * **Why it fits:** It's our top recommendation for growing stores. You get automated multi-channel workflows (Email + SMS), pre-built abandoned cart & checkout sequences, and a generous free tier up to 250 contacts.
-        * **Verdict:** Unbeatable feature-to-price ratio if you want room to scale without switching platforms later.
+        #### 2. Альтернативы с фиксированной ценой (например, нишевые плагины уровня Retainful)
+        * **Почему подходит:** Для тех, кому нужен только базовый email-возврат без лишних переплат.
         
-        #### 2. Retainful (Starting at $9/mo)
-        * **Why it fits:** Perfect if you want pure email-based recovery without paying for advanced enterprise features you won't use. 
-        * **Verdict:** Lightweight, straightforward setup directly inside Shopify.
-        
-        #### 3. Shopify Native Abandoned Checkout (Free)
-        * **Why it fits:** Shopify includes a basic automated email reminder out of the box.
-        * **Verdict:** Good for day one, but lacks advanced segmentation, multi-channel SMS triggers, and custom exit-intent popups needed long-term.
-        
+        #### 3. Встроенный функционал Shopify
+        * **Почему подходит:** Честный разбор плюсов и минусов штатных напоминаний движка (почему их не хватает для долгосрочного роста из-за отсутствия гибкой сегментации).
+
         ---
-        ### 💡 Ready to find your exact fit?
-        Don't guess your numbers. Use our **[Revenue & Recovery Calculator](#)** (Tab 1) to see how much uncaptured revenue you're leaving on the table right now, or check out our automated **Tool Finder** (Tab 2).
+        ### Сравнительная таблица
+        | Инструмент | Цена за старт | Брошенная корзина / Чекаут | Наличие бесплатного плана |
+        | :--- | :--- | :--- | :--- |
+        | **Omnisend** | $16 / мес | Полная автоматизация | Да (до 250 контактов) |
+        | **Retainful / Аналоги** | $9–$19 / мес | Базовая | Ограниченно |
+        | **Shopify Built-in** | Бесплатно | Только базовый Email | Встроено в движок |
+
+        ---
+        ### Призыв к действию (CTA)
+        «Не уверен, какой инструмент выгоднее именно под твой текущий трафик? Посчитай точный объём упущенной выручки в нашем **[Shopify Revenue Recovery Calculator](#)** (Tab 1), чтобы подобрать стек под свой бюджет».
         """)
 
   elif "Omnisend vs Klaviyo" in article_choice:
@@ -63,41 +71,23 @@ with nav_tab3:
     st.markdown("*Published by Growth & Recovery Lab | Reading time: 6 mins*")
 
     st.markdown("""
-        ### Executive Summary
-        Both **Klaviyo** and **Omnisend** are top-tier marketing automation platforms built specifically for Shopify. However, they serve very different business scales:
-        * **Klaviyo** is an enterprise data engine designed for stores with dedicated marketing teams and larger budgets.
-        * **Omnisend** is a streamlined, highly profitable growth stack built for solo founders, small teams, and stores under $100k/mo.
+        ### Введение
+        Klaviyo — признанный тяжеловес e-commerce, а Omnisend — главный выбор для быстрого запуска с фокусом на омниканальность. Но кто из них объективно выгоднее для небольшого интернет-магазина, где каждая сотня евро на счету? Разбираем без маркетинговой шелухи.
 
-        ---
+        ### Ценообразование и пороги: где скрыт подвох
+        * **Klaviyo:** тарификация идет по активным профилям (общей базе подписчиков). По мере роста базы ценник резко скачивается ступеньками ($20 за 500 контактов превращаются в тяжелые чеки на больших объемах), а SMS оплачивается отдельно через кредитные пакеты.  
+        * **Omnisend:** более мягкая шкала масштабирования. План Standard начинается с $16/мес, а тариф Pro ($59/мес) сразу объединяет безлимитный email и встроенный пакет SMS-кредитов. Для небольшого бренда это прогнозируемая экономия бюджета.  
 
-        ### 1. Pricing Structure & Hidden Costs
-        
-        | Feature / Plan | **Omnisend** | **Klaviyo** |
-        | :--- | :--- | :--- |
-        | **Starting Price** | **$16 / month** | **$20 / month** |
-        | **Pricing Metric** | Total emails sent per tier | Total active contacts stored |
-        | **SMS Integration** | Free SMS credits included in Pro plan | Paid separately via extra credit packs |
-        | **Support** | 24/7 Live Chat (all plans, including Free) | Email-only on lower tiers / slower responses |
+        ### Функционал автоматизации брошенных корзин
+        Сравнение готовых workflow (Abandoned Cart, Browse Abandonment, Checkout Recovery). У обоих отличная глубокая интеграция с Shopify, но у Omnisend готовые сценарии собираются за 15 минут «из коробки», тогда как под Klaviyo часто приходится настраивать кастомные события и копаться в глубокой аналитике, избыточной для небольшого оборота.  
 
-        **The Verdict on Pricing:** Klaviyo’s pricing scales aggressively based on total profile storage, regardless of how often you email them. Omnisend provides a far smoother pricing curve, making it significantly cheaper as your email list expands.
-
-        ---
-
-        ### 2. Abandoned Cart & Recovery Workflows
-        * **Omnisend:** Features pre-built, one-click automation templates for *Browse Abandonment*, *Cart Abandonment*, and *Checkout Abandonment*. You can combine Email + SMS + Push Notifications inside a single visual flowchart in under 15 minutes.
-        * **Klaviyo:** Offers deep custom event triggers and advanced conditional branching. While powerful, setting up full multi-channel workflows often requires technical configuration and ongoing testing.
-
-        ---
-
-        ### 3. Final Recommendation: Which Should You Choose?
-
-        * **Choose Klaviyo if:** You manage an established brand ($100k+/month), have a dedicated data analyst or email marketer, and need granular predictive analytics.
-        * **Choose Omnisend if:** You are a solo merchant or small team running a Shopify store under $50k/month, and you want high-converting abandoned cart recovery with minimal setup overhead and predictable costs.
+        ### Итоговый вердикт: Кого выбрать?
+        * **Выбирай Klaviyo, если:** у тебя крупный магазин, штат маркетологов и критически важен продвинутый predictive AI-анализ поведения покупателей enterprise-уровня.  
+        * **Выбирай Omnisend (наша рекомендация для старта):** если ты управляешь магазином в одиночку или небольшой командой, ценишь простоту и хочешь получить омниканальный возврат выручки без переплаты за сложные инструменты. *(Аккуратная партнёрская ссылка с предложением протестировать бесплатный тариф).*
 
         ---
         ### 🎯 Calculate Your Exact ROI
-        Unsure how much revenue an automated workflow would actually recover for your store? 
-        Head back to **Tab 1 (Calculator)** to run your numbers through our сustom scenarios!
+        Head back to **Tab 1 (Calculator)** to run your numbers through our custom scenarios!
         """)
 
   elif "Native Features" in article_choice:
