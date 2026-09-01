@@ -32,8 +32,8 @@ st.set_page_config(
 st.title("📈 Shopify Revenue & Recovery Calculator")
 st.write("Analyze potential revenue recovery and explore expert insights for your Shopify store.")
 
-# Объявление четырех вкладок ДО их использования
-nav_tab1, nav_tab2, nav_tab3, nav_tab4 = st.tabs(["Calculator", "Tool Finder", "SEO Articles", "Admin Leads"])
+# Объявление пяти вкладок ДО их использования
+nav_tab1, nav_tab2, nav_tab3, nav_tab4, nav_tab5 = st.tabs(["Calculator", "Tool Finder", "SEO Articles", "Admin Leads", "DSGVO & Legal"])
 
 with nav_tab1:
     st.header("Revenue & Recovery Calculator")
@@ -90,7 +90,8 @@ with nav_tab2:
                 "Low Budget (Under $50/month)",
                 "Growth Stage ($50 - $200/month)",
                 "Scale Stage ($200+/month)"
-            ]
+            ],
+            key="tf_budget"
         )
 
     with tf_col2:
@@ -100,7 +101,8 @@ with nav_tab2:
                 "Email Only (Simple & Cost-Effective)",
                 "Email + SMS (Omnichannel Growth)",
                 "Advanced Multi-Channel (Email, SMS, WhatsApp & Automation)"
-            ]
+            ],
+            key="tf_channel"
         )
 
     if st.button("Recommend Best Tool", type="secondary"):
@@ -126,7 +128,6 @@ with nav_tab2:
                     * **Why it fits:** The ultimate all-in-one marketing automation powerhouse combining high-converting email and SMS workflows designed specifically for Shopify.
                     * **Key Highlights:** Pre-built automation templates, excellent ROI, thousands of 5-star reviews, and seamless multi-channel scaling.
                 """)
-                # Здесь в будущем будет вставлена партнерская ссылка
                 st.info("💡 Tip: Omnisend offers deep Shopify integration that bridges the gap between native checkout limits and full revenue recovery.")
 
 with nav_tab3:
@@ -140,7 +141,8 @@ with nav_tab3:
             "Best Shopify Abandoned Cart Apps in 2026",
             "How to Recover Abandoned Carts Without Heavy Discounts",
             "Email vs. Multi-Channel Reminders for Checkout Recovery"
-        ]
+        ],
+        key="seo_article"
     )
 
     if article_choice == "Does Shopify Have Native Abandoned Cart Recovery?":
@@ -196,7 +198,7 @@ with nav_tab4:
     st.header("Admin Leads Overview")
     st.write("Review collected lead details and estimated recovery values from the calculator.")
     
-    if st.checkbox("Show Lead Database"):
+    if st.checkbox("Show Lead Database", key="admin_checkbox"):
         conn = sqlite3.connect(DB_FILE)
         cursor = conn.cursor()
         cursor.execute("SELECT id, store_url, estimated_revenue, email, created_at FROM leads")
@@ -207,3 +209,32 @@ with nav_tab4:
             st.table(rows)
         else:
             st.info("No leads recorded in the database yet.")
+
+with nav_tab5:
+    st.header("Datenschutzerklärung & Impressum (DSGVO)")
+    st.write("""
+    ### 1. Datenschutz auf einen Blick
+    **Allgemeine Hinweise**  
+    Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten passiert, wenn Sie diese Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie persönlich identifiziert werden können.
+
+    ### 2. Datenerfassung auf dieser Website
+    **Wer ist verantwortlich für die Datenerfassung auf dieser Website?**  
+    Die Datenverarbeitung auf dieser Website erfolgt durch den Website-Betreiber (Kontakt siehe Impressum unten).
+
+    **Wie erfassen wir Ihre Daten?**  
+    Ihre Daten werden zum einen dadurch erhoben, dass Sie uns diese mitteilen (z. B. durch Eingabe Ihrer E-Mail-Adresse und Ihrer Shop-URL im Berechnungsformular).
+
+    **Wofür nutzen wir Ihre Daten?**  
+    Ein Teil der Daten wird erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten. Andere Daten (Ihre E-Mail-Adresse und Shop-Daten) werden ausschließlich zur Speicherung Ihres Berichts und zur Bereitstellung relevanter Software-Empfehlungen genutzt.
+
+    ### 3. Ihre Rechte
+    Sie haben jederzeit das Recht, unentgeltlich Auskunft über Herkunft, Empfänger und Zweck Ihrer gespeicherten personenbezogenen Daten zu erhalten. Sie haben außerdem ein Recht, die Berichtigung oder Löschung dieser Daten zu verlangen.
+
+    ---
+
+    ### Impressum
+    **Angaben gemäß § 5 TMG / Angaben nach DSGVO:**  
+    Igor Widiker  
+    Erkrath, Deutschland  
+    E-Mail: (Wird für den Support über die App bereitgestellt)
+    """)
